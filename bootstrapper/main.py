@@ -24,8 +24,6 @@ class BackendUtilities:
                 return 1
         except (requests.ConnectionError, requests.Timeout):
             return 2
-        
-    
 
 
 class BackendInitiliazer():
@@ -38,8 +36,6 @@ class BackendInitiliazer():
     def isInstalled(self) -> bool:
         return self.ALR_INSTALLED
     
-
-        
 
 class DisplayGUI(QMainWindow):
     def __init__(self):
