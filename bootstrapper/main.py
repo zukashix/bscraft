@@ -248,5 +248,5 @@ except Exception as e1:
     except Exception as e2:
         # report minimal error to console if gui fails
         print('> Internal error. Most likely a native install or PyQt issue.')
-        print(f'> {e2}')
+        print(f'> E1: {e1}\n> E2: {e2}')
         exit(1)
