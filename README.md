@@ -29,5 +29,5 @@ BSCraft is a vanilla+ lightweight minecraft modpack
 - If background image/fonts do not load, check working directory (must be the root folder, not the `bootstrapper` folder.) OR modify code to point to the files correctly.
 
 ## Developers
-[**Zukashi**](https://github.com/zukashix)
-[**Braxton Elmer**](https://github.com/BraxtonElmer)
+- [**Zukashi**](https://github.com/zukashix)
+- [**Braxton Elmer**](https://github.com/BraxtonElmer)
