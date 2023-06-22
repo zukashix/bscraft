@@ -1,6 +1,7 @@
 # BSCraft Launcher
 
 Source for BSCraft 3.0 Launcher & Bootstrapper <br>
+BSCraft is a vanilla+ lightweight minecraft modpack 
 
 ## Progress
 
@@ -26,3 +27,7 @@ Source for BSCraft 3.0 Launcher & Bootstrapper <br>
 - Install modules. `python -m pip install -r requirements.txt`
 - Run the script. `python ./bootstrapper/main.py`
 - If background image/fonts do not load, check working directory (must be the root folder, not the `bootstrapper` folder.) OR modify code to point to the files correctly.
+
+## Developers
+- [**Zukashi**](https://github.com/zukashix)
+- [**Braxton Elmer**](https://github.com/BraxtonElmer)
