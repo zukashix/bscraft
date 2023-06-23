@@ -8,14 +8,15 @@ try:
     import sys
     import os
     import json
-    import subprocess
+    #import subprocess
+    import time
     import platform # will be removed in target release
 
     # import third-party modules
     import requests
     from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QMessageBox
     from PyQt5.QtGui import QPixmap, QFont, QFontDatabase
-    from PyQt5.QtCore import Qt, QEvent
+    from PyQt5.QtCore import Qt, QEvent, QTimer
 
     # configure primary directory as per os
     plat = platform.system().lower()
@@ -27,6 +28,13 @@ try:
 
     class BackendUtilities:
         """Class to group  multi-use utility functions"""
+        # function that performs tasks after displaying gui
+        def postDisplay(mainInit):
+            timer.stop()
+            mainInit.install()
+            mainInit.startProcess()
+            sys.exit(0)
+
 
         # function to check internet connection
         def checkInternet() -> bool:
@@ -90,11 +98,11 @@ try:
         # function to start the launcher process
         def startProcess(self):
             if 'win' in plat:
-                args = ['start', '/B',  APPDATA + '.bscraft/launcher.exe']
+                args = "start /B {}.bscraft/launcher.exe".format(APPDATA)
             else:
                 args = ['nohup', 'firefox'] # for linux, dev use only. will be removed in target build
             
-            subprocess.Popen(args)
+            os.system(args)
 
 
         # function to install the latest available version of launcher
@@ -133,11 +141,10 @@ try:
 
     class DisplayGUI(QMainWindow):
         """class to provide GUI to bootstrapper"""
-        def __init__(self, statusText: str, mainInit: BackendInitiliazer):
+        def __init__(self, statusText): # a min okay hey can you open the ftp server here 
             # init and set variables
             super(DisplayGUI, self).__init__()
             self.statusText = statusText
-            self.mainInit = mainInit
 
             # Set window properties
             self.setWindowTitle("BSCL Updater")
@@ -149,13 +156,14 @@ try:
             # Set background image
             self.background_label = QLabel(self)
             self.background_label.setGeometry(0, 0, 800, 400)
-            self.background_image = QPixmap("bootstrapper/resources/bgimg.jpg")
+            self.background_image = QPixmap("./bootstrapper/resources/bgimg.jpg")
             self.background_label.setPixmap(self.background_image)
 
-            # Set bscraft logo text
+            # Set text for logo 
+            
             self.text_label = QLabel(self)
-            self.text_label.setGeometry(40, 50, 450, 80)
-            QFontDatabase.addApplicationFont("bootstrapper/resources/mcfont.ttf")
+            self.text_label.setGeometry(40, 50, 450, 120)
+            QFontDatabase.addApplicationFont("./bootstrapper/resources/mcfont.ttf")
             self.text_label.setFont(QFont("MineCrafter 3", 40))
             self.text_label.setText("BSCraft")
             self.text_label.setStyleSheet("color: white")
@@ -163,7 +171,7 @@ try:
             # set current status text
             self.text_label_2 = QLabel(self)
             self.text_label_2.setGeometry(40, 340, 350, 40)
-            QFontDatabase.addApplicationFont("bootstrapper/resources/Minecraftia.ttf")
+            QFontDatabase.addApplicationFont("./bootstrapper/resources/Minecraftia.ttf")
             self.text_label_2.setFont(QFont("Minecraftia", 15))
             self.text_label_2.setText(self.statusText)
             self.text_label_2.setStyleSheet("color: lightgreen")
@@ -176,19 +184,6 @@ try:
             qr.moveCenter(cp)
             self.move(qr.topLeft())
 
-
-        # function that performs tasks after displaying gui
-        def postDisplay(self):
-            self.mainInit.install()
-            self.mainInit.startProcess()
-            exit(0)
-
-
-        # function to determine if gui is displayed and trigger post display tasks function
-        def event(self, event):
-            if event.type() == QEvent.InputMethodQuery:
-                self.postDisplay()
-            return super(DisplayGUI, self).event(event)
 
 
     if __name__ == "__main__":
@@ -220,8 +215,13 @@ try:
                     filesize = mainInit.getMbSize() # get update filesize
                     statustext = "Updating... ({} MB)".format(filesize)
 
-                    window = DisplayGUI(statustext, mainInit) # create gui
+                    window = DisplayGUI(statustext) # create gui
                     window.show()
+
+                    timer = QTimer()
+                    timer.timeout.connect(lambda: BackendUtilities.postDisplay(mainInit))
+                    timer.start(1000)
+                    
                     sys.exit(app.exec_())
 
                 mainInit.startProcess() # start launcher and exit bootstrapper
@@ -231,8 +231,13 @@ try:
                 filesize = mainInit.getMbSize() # get install filesize
                 statustext = "Installing... ({} MB)".format(filesize)
 
-                window = DisplayGUI(statustext, mainInit) # create gui
+                window = DisplayGUI(statustext) # create gui
                 window.show()
+                
+                timer = QTimer()
+                timer.timeout.connect(lambda: BackendUtilities.postDisplay(mainInit))
+                timer.start(1000)
+
                 sys.exit(app.exec_())
                 
 
