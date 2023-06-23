@@ -8,8 +8,6 @@ try:
     import sys
     import os
     import json
-    #import subprocess
-    import time
     import platform # will be removed in target release
 
     # import third-party modules
@@ -100,7 +98,7 @@ try:
             if 'win' in plat:
                 args = "start /B {}.bscraft/launcher.exe".format(APPDATA)
             else:
-                args = ['nohup', 'firefox'] # for linux, dev use only. will be removed in target build
+                args = "nohup firefox" # for linux, dev use only. will be removed in target build
             
             os.system(args)
 
