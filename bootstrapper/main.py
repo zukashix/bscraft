@@ -14,7 +14,7 @@ try:
     import requests
     from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QMessageBox
     from PyQt5.QtGui import QPixmap, QFont, QFontDatabase
-    from PyQt5.QtCore import Qt, QEvent, QTimer
+    from PyQt5.QtCore import Qt, QTimer
 
     # configure primary directory as per os
     plat = platform.system().lower()
@@ -139,10 +139,15 @@ try:
 
     class DisplayGUI(QMainWindow):
         """class to provide GUI to bootstrapper"""
-        def __init__(self, statusText): # a min okay hey can you open the ftp server here 
+        def __init__(self, statusText): 
             # init and set variables
             super(DisplayGUI, self).__init__()
             self.statusText = statusText
+
+            # load external resources
+            QFontDatabase.addApplicationFont("resources/mcfont.ttf")
+            QFontDatabase.addApplicationFont("resources/Minecraftia.ttf")
+            self.background_image = QPixmap("resources/bgimg.jpg")
 
             # Set window properties
             self.setWindowTitle("BSCL Updater")
@@ -154,14 +159,12 @@ try:
             # Set background image
             self.background_label = QLabel(self)
             self.background_label.setGeometry(0, 0, 800, 400)
-            self.background_image = QPixmap("./bootstrapper/resources/bgimg.jpg")
             self.background_label.setPixmap(self.background_image)
 
             # Set text for logo 
             
             self.text_label = QLabel(self)
             self.text_label.setGeometry(40, 50, 450, 120)
-            QFontDatabase.addApplicationFont("./bootstrapper/resources/mcfont.ttf")
             self.text_label.setFont(QFont("MineCrafter 3", 40))
             self.text_label.setText("BSCraft")
             self.text_label.setStyleSheet("color: white")
@@ -169,7 +172,6 @@ try:
             # set current status text
             self.text_label_2 = QLabel(self)
             self.text_label_2.setGeometry(40, 340, 350, 40)
-            QFontDatabase.addApplicationFont("./bootstrapper/resources/Minecraftia.ttf")
             self.text_label_2.setFont(QFont("Minecraftia", 15))
             self.text_label_2.setText(self.statusText)
             self.text_label_2.setStyleSheet("color: lightgreen")
