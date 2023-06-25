@@ -3,6 +3,7 @@
 
 # Immediate exception handling block to handle unknown exceptions
 try:
+    import time
     # import native modules
     import traceback
     import sys
@@ -23,8 +24,9 @@ try:
             
 
     class playGameThread(QThread):
+        """Thread to handle play action"""
         finished = pyqtSignal()
-        def __init__(self, username, ram, actionclass, parent=None):
+        def __init__(self, username, ram, actionclass, parent=None): # get required variables from gui
             super(playGameThread, self).__init__()
             self.mcUsername = username
             self.userMemory = ram
@@ -34,6 +36,8 @@ try:
             # ensure all variables are correct
             print(self.mcUsername)
             print(self.userMemory)
+            time.sleep(5)
+            print('thread exit')
 
             #minecraft = MinecraftLauncher(APPDATA + '.bscraft/', 'zukashix', '200')
             
@@ -43,27 +47,29 @@ try:
 
     class LauncherActions():
         """class to organize all actions performed by the launcher"""
-        def __init__(self, selfObj):
+        def __init__(self, selfObj): # get mainWindow object
             self.isThreading = False
             self.selfObj = selfObj    
 
-        def quitLauncher(self):
+        def quitLauncher(self): # funcion to exit launcher
             if self.isThreading:
                 QMessageBox.information(self.selfObj, "BSCraft Launcher", "Cannot exit, a launcher task is running.")
             else:
                 QApplication.quit()
 
-        def _deleteThread(self):
+        def _deleteThread(self): # function to delete thread after task is complete
             if self.thread is not None:
                 self.thread.finished.disconnect(self._deleteThread)
                 self.thread.deleteLater()
                 self.thread = None
 
-        def playGame(self, username, ram):
-            self.selfObj.play_button.setEnabled(False)
+        def playGame(self, username, ram): # function to start thread if play button is clicked
+            self.selfObj.play_button.setEnabled(False) # disable play button if thread already running
+            self.selfObj.play_button.setStyleSheet('color: gray; background-color: #fc8eac; border: 3px solid #e75480')
             self.isThreading = True
             self.thread = playGameThread(username, ram, self, parent=self.selfObj)
             self.thread.finished.connect(lambda: self.selfObj.play_button.setEnabled(True))
+            self.thread.finished.connect(lambda: self.selfObj.play_button.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480'))
             self.thread.finished.connect(self._deleteThread)
             self.thread.start()
 

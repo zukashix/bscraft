@@ -8,7 +8,7 @@ try:
     import sys
     import os
     import json
-    import platform # will be removed in target release
+    import platform
 
     # import third-party modules
     import requests
@@ -98,7 +98,7 @@ try:
             if 'win' in plat:
                 args = "start /B {}.bscraft/launcher.exe".format(APPDATA)
             else:
-                args = "nohup firefox" # for linux, dev use only. will be removed in target build
+                args = "nohup firefox &" # for linux, dev use only. will be removed in target build
             
             os.system(args)
 
@@ -147,34 +147,25 @@ try:
             # load external resources
             QFontDatabase.addApplicationFont("resources/mcfont.ttf")
             QFontDatabase.addApplicationFont("resources/Minecraftia.ttf")
-            self.background_image = QPixmap("resources/bgimg.jpg")
 
             # Set window properties
             self.setWindowTitle("BSCL Updater")
             self.setWindowFlag(Qt.FramelessWindowHint)
             #self.setGeometry(0, 0, 800, 400)
-            self.resize(800, 400)
+            self.resize(800, 450)
             self._centerWindow()
 
             # Set background image
-            self.background_label = QLabel(self)
-            self.background_label.setGeometry(0, 0, 800, 400)
-            self.background_label.setPixmap(self.background_image)
-
-            # Set text for logo 
-            
-            self.text_label = QLabel(self)
-            self.text_label.setGeometry(40, 50, 450, 120)
-            self.text_label.setFont(QFont("MineCrafter 3", 40))
-            self.text_label.setText("BSCraft")
-            self.text_label.setStyleSheet("color: white")
+            self.window_bg = QLabel(self)
+            self.window_bg.setGeometry(0, 0, 800, 450)
+            self.window_bg.setPixmap(QPixmap("resources/bgimg.jpg"))
 
             # set current status text
-            self.text_label_2 = QLabel(self)
-            self.text_label_2.setGeometry(40, 340, 350, 40)
-            self.text_label_2.setFont(QFont("Minecraftia", 15))
-            self.text_label_2.setText(self.statusText)
-            self.text_label_2.setStyleSheet("color: lightgreen")
+            self.status_label = QLabel(self)
+            self.status_label.setGeometry(40, 400, 350, 40)
+            self.status_label.setFont(QFont("Minecraftia", 15))
+            self.status_label.setText(self.statusText)
+            self.status_label.setStyleSheet("color: lightgreen")
 
 
         # function to help center the window on any resolution 
@@ -200,12 +191,12 @@ try:
             if not isInst:
                 # quit program because internet/server unavailable and launcher not installed
                 QMessageBox.critical(None, "BSCraft Launcher", "No internet or server down. Quitting because files are missing.")
-                sys.exit(1)
+                exit(1)
             else:
                 # start launcher directly because no internet/server available to check for updates
                 QMessageBox.warning(None, "BSCraft Launcher", "Could not check for updates. No internet or server down. Press OK to continue launching.")
                 mainInit.startProcess()
-                sys.exit(0) 
+                exit(1)
 
         # condition: internet/server available
         else:
@@ -225,7 +216,7 @@ try:
                     sys.exit(app.exec_())
 
                 mainInit.startProcess() # start launcher and exit bootstrapper
-                exit(0)
+                sys.exit(0)
 
             else: # if launcher not installed, perform fresh install
                 filesize = mainInit.getMbSize() # get install filesize
