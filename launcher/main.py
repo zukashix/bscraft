@@ -7,14 +7,9 @@ try:
     import traceback
     import sys
     import os
-    import json
-    import time
-    import platform # will be removed in target release
-    #import subprocess
-    # check if updates, retest
+    import platform
 
     # import third-party modules
-    import requests
     from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QMessageBox, QPushButton, QLineEdit
     from PyQt5.QtGui import QPixmap, QFont, QFontDatabase
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
@@ -25,64 +20,53 @@ try:
         APPDATA = os.getenv("APPDATA").replace("\\", "/") + '/' # windows
     else:
         APPDATA = os.getenv("HOME") + '/' # linux
-
-
-    class BackendUtilities:
-        # function to check internet connection
-        def checkInternet() -> bool:
-            headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
-            }
-            try:
-                requests.get('https://updater.braxtonelmer.com/', timeout=10, headers=headers)
-                return True
-            except:
-                return False
-
-
-        # function to download a file using url 
-        def downloadFile(file_url, file_loc) -> bool:
-            try:
-                headers = {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
-                }
-                r = requests.get(file_url, stream = True, headers=headers, verify=False)
-                with open(file_loc, 'wb') as ufile:
-                    for chunk in r.iter_content(chunk_size=1024):
-            
-                    # Writing one chunk at a time to file (No excessive memory usage on large-size files)
-                        if chunk:
-                            ufile.write(chunk)
-                            ufile.flush()
-
-                return True
-            
-            except:
-                return False
             
 
     class playGameThread(QThread):
         finished = pyqtSignal()
+        def __init__(self, username, ram, actionclass, parent=None):
+            super(playGameThread, self).__init__()
+            self.mcUsername = username
+            self.userMemory = ram
+            self.actionclass = actionclass
     
         def run(self):
-            print('> playGame(0)')
-            time.sleep(5)
-            print('> playGame(5)')
+            # ensure all variables are correct
+            print(self.mcUsername)
+            print(self.userMemory)
+
+            #minecraft = MinecraftLauncher(APPDATA + '.bscraft/', 'zukashix', '200')
+            
+            self.actionclass.isThreading = False
             self.finished.emit()
  
 
-    class LauncherActions:
+    class LauncherActions():
         """class to organize all actions performed by the launcher"""
+        def __init__(self, selfObj):
+            self.isThreading = False
+            self.selfObj = selfObj    
 
-        def quitLauncher():
-            sys.exit(0)
+        def quitLauncher(self):
+            if self.isThreading:
+                QMessageBox.information(self.selfObj, "BSCraft Launcher", "Cannot exit, a launcher task is running.")
+            else:
+                QApplication.quit()
 
-        def playGame(selfObj):
-            selfObj.button_1.setEnabled(False)
-            thread = playGameThread(parent=selfObj)
-            thread.finished.connect(lambda: selfObj.button_1.setEnabled(True))
-            thread.finished.connect(thread.deleteLater)
-            thread.start()
+        def _deleteThread(self):
+            if self.thread is not None:
+                self.thread.finished.disconnect(self._deleteThread)
+                self.thread.deleteLater()
+                self.thread = None
+
+        def playGame(self, username, ram):
+            self.selfObj.play_button.setEnabled(False)
+            self.isThreading = True
+            self.thread = playGameThread(username, ram, self, parent=self.selfObj)
+            self.thread.finished.connect(lambda: self.selfObj.play_button.setEnabled(True))
+            self.thread.finished.connect(self._deleteThread)
+            self.thread.start()
+
 
 
     class DisplayGUI(QMainWindow):
@@ -90,9 +74,9 @@ try:
         def __init__(self): 
             # init and set variables
             super(DisplayGUI, self).__init__()
+            self.actionclass = LauncherActions(self)
 
             # load external resources
-            self.background_image = QPixmap("resources/bgimg.jpg")
             QFontDatabase.addApplicationFont("resources/mcfont.ttf")
             QFontDatabase.addApplicationFont("resources/Minecraftia.ttf")
 
@@ -100,52 +84,58 @@ try:
             self.setWindowTitle("BSCraft Launcher")
             self.setWindowFlag(Qt.FramelessWindowHint)
             #self.setGeometry(0, 0, 800, 400)
-            self.resize(800, 400)
+            self.resize(800, 450)
             self._centerWindow()
 
             # Set background image
-            self.background_label = QLabel(self)
-            self.background_label.setGeometry(0, 0, 800, 400)
-            self.background_label.setPixmap(self.background_image)
+            self.window_bg = QLabel(self)
+            self.window_bg.setGeometry(0, 0, 800, 450)
+            self.window_bg.setPixmap(QPixmap("resources/bgimg.jpg"))
 
             # Set labels
-            
-            self.text_label = QLabel(self)
-            self.text_label.setGeometry(40, 50, 450, 120)
-            self.text_label.setFont(QFont("MineCrafter 3", 40))
-            self.text_label.setText("BSCraft")
-            self.text_label.setStyleSheet("color: white")
+            self.status_label = QLabel(self)
+            self.status_label.setGeometry(40, 400, 350, 40)
+            self.status_label.setFont(QFont("Minecraftia", 15))
+            self.status_label.setText("Ready!")
+            self.status_label.setStyleSheet("color: lightgreen")
 
-            self.text_label_2 = QLabel(self)
-            self.text_label_2.setGeometry(40, 340, 350, 40)
-            self.text_label_2.setFont(QFont("Minecraftia", 15))
-            self.text_label_2.setText("Ready!")
-            self.text_label_2.setStyleSheet("color: lightgreen")
+            self.username_sign_label = QLabel(self)
+            self.username_sign_label.setGeometry(475, 240, 350, 40)
+            self.username_sign_label.setFont(QFont("Minecraftia", 15))
+            self.username_sign_label.setText("Username:")
+            self.username_sign_label.setStyleSheet("color: white")
 
-            self.text_label_3 = QLabel(self)
-            self.text_label_3.setGeometry(425, 215, 350, 40)
-            self.text_label_3.setFont(QFont("Minecraftia", 15))
-            self.text_label_3.setText("Username:")
-            self.text_label_3.setStyleSheet("color: black")
+            self.ram_sign_label = QLabel(self)
+            self.ram_sign_label.setGeometry(475, 165, 350, 40)
+            self.ram_sign_label.setFont(QFont("Minecraftia", 15))
+            self.ram_sign_label.setText("RAM [In MB]:")
+            self.ram_sign_label.setStyleSheet("color: white")
 
             # set action buttons
-            self.button_1 = QPushButton("Play!", self)
-            self.button_1.clicked.connect(lambda: LauncherActions.playGame(self))
-            self.button_1.setGeometry(400, 300, 100, 50)
-            self.button_1.setFont(QFont("Minecraftia", 15))
-            self.button_1.setStyleSheet('background-image: url(resources/buttons.png); border: 2px solid black')
+            self.play_button = QPushButton("Play!", self)
+            self.play_button.clicked.connect(lambda: self.actionclass.playGame(self.username_textbox.text(), self.ram_textbox.text()))
+            self.play_button.setGeometry(450, 350, 100, 50)
+            self.play_button.setFont(QFont("Minecraftia", 15))
+            self.play_button.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
-            self.button_2 = QPushButton("Quit", self)
-            self.button_2.clicked.connect(LauncherActions.quitLauncher)
-            self.button_2.setGeometry(550, 300, 100, 50)
-            self.button_2.setFont(QFont("Minecraftia", 15))
-            self.button_2.setStyleSheet('background-image: url(resources/buttons.png); border: 2px solid black')
+            self.quit_button = QPushButton("Quit", self)
+            self.quit_button.clicked.connect(self.actionclass.quitLauncher)
+            self.quit_button.setGeometry(600, 350, 100, 50)
+            self.quit_button.setFont(QFont("Minecraftia", 15))
+            self.quit_button.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
             # set textboxes
-            self.textbox_1 = QLineEdit(self)
-            self.textbox_1.setGeometry(425, 250, 200, 30)
-            self.textbox_1.setFont(QFont("Minecraftia", 15))
-            self.textbox_1.setStyleSheet('background-image: url(resources/buttons.png); border: 2px solid black')
+            self.username_textbox = QLineEdit(self)
+            self.username_textbox.setGeometry(475, 275, 200, 30)
+            self.username_textbox.setFont(QFont("Minecraftia", 15))
+            self.username_textbox.setText("Player0")
+            self.username_textbox.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
+
+            self.ram_textbox = QLineEdit(self)
+            self.ram_textbox.setGeometry(475, 200, 200, 30)
+            self.ram_textbox.setFont(QFont("Minecraftia", 15))
+            self.ram_textbox.setText("4096")
+            self.ram_textbox.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
 
         # function to help center the window on any resolution 
