@@ -10,8 +10,8 @@ try:
     import json
     import time
     import platform # will be removed in target release
-    import subprocess
-    # check if updates
+    #import subprocess
+    # check if updates, retest
 
     # import third-party modules
     import requests
