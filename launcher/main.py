@@ -55,7 +55,7 @@ try:
             # validate username
             usernameValid = False
 
-            if len(self.mcUsername) >= 3 || len(self.mcUsername) < 16:
+            if len(self.mcUsername) >= 3 or len(self.mcUsername) < 16:
                 if re.match(r'^[a-zA-Z0-9_]+$', self.mcUsername):
                     usernameValid = True
 
