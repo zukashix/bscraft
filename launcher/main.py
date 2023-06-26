@@ -4,16 +4,18 @@
 # Immediate exception handling block to handle unknown exceptions
 try:
     import time
-    # import native modules
+    # import modules
     import traceback
     import sys
     import os
     import platform
+    import re
 
-    # import third-party modules
     from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QMessageBox, QPushButton, QLineEdit
     from PyQt5.QtGui import QPixmap, QFont, QFontDatabase
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
+    
+    import modules.backUtils as Utils
 
     # configure primary directory as per os
     plat = platform.system().lower()
@@ -28,16 +30,47 @@ try:
         finished = pyqtSignal()
         def __init__(self, username, ram, actionclass, parent=None): # get required variables from gui
             super(playGameThread, self).__init__()
-            self.mcUsername = username
-            self.userMemory = ram
+            self.mcUsername = username.strip().replace(' ', '_')
+            self.userMemory = ram.strip()
             self.actionclass = actionclass
+            self.parentClass = parent
+            self.systemMemory = Utils.getRam()
     
         def run(self):
-            # ensure all variables are correct
-            print(self.mcUsername)
-            print(self.userMemory)
-            time.sleep(5)
-            print('thread exit')
+            # ensure all variables are valid
+            # validate username
+            usernameValid = False
+
+            if len(self.mcUsername) >= 3:
+                if re.match(r'^[a-zA-Z0-9_]+$', self.mcUsername):
+                    usernameValid = True
+
+            if not usernameValid:
+                self.parentClass.status_label.setText("Invalid Username.")
+                self.parentClass.status_label.setStyleSheet("color: red")
+                self.actionclass.isThreading = False
+                self.finished.emit()
+                return
+
+            # validate ram
+            try:
+                self.userMemory = int(self.userMemory)
+            except ValueError:
+                self.parentClass.status_label.setText("Invalid RAM provided.")
+                self.parentClass.status_label.setStyleSheet("color: red")
+                self.actionclass.isThreading = False
+                self.finished.emit()
+                return
+
+            if self.systemMemory <= self.userMemory:
+                self.parentClass.status_label.setText("Too much RAM provided.")
+                self.parentClass.status_label.setStyleSheet("color: red")
+                self.actionclass.isThreading = False
+                self.finished.emit()
+                return
+            
+            print('valid username: {}'.format(self.mcUsername))
+            print('valid ram: {}'.format(self.userMemory))
 
             #minecraft = MinecraftLauncher(APPDATA + '.bscraft/', 'zukashix', '200')
             
@@ -81,6 +114,11 @@ try:
             # init and set variables
             super(DisplayGUI, self).__init__()
             self.actionclass = LauncherActions(self)
+            ram = Utils.getRam()
+            if ram < 5000:
+                ramPlaceholder = '3072'
+            else:
+                ramPlaceholder = '6144'
 
             # load external resources
             QFontDatabase.addApplicationFont("resources/mcfont.ttf")
@@ -140,7 +178,7 @@ try:
             self.ram_textbox = QLineEdit(self)
             self.ram_textbox.setGeometry(475, 200, 200, 30)
             self.ram_textbox.setFont(QFont("Minecraftia", 15))
-            self.ram_textbox.setText("4096")
+            self.ram_textbox.setText(ramPlaceholder)
             self.ram_textbox.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
 

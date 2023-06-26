@@ -1,5 +1,6 @@
 # import required modules
 import requests
+import psutil
 
 # define web headers
 headers = {
@@ -14,6 +15,8 @@ def checkInternet() -> bool:
     except:
         return False
 
+def getRam() -> int:
+    return int(psutil.virtual_memory().total / (1024**2))
 
 # function to download a file using url 
 def downloadFile(file_url, file_loc) -> bool:
