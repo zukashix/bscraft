@@ -47,7 +47,7 @@ try:
 
             if not usernameValid:
                 self.parentClass.status_label.setText("Invalid Username.")
-                self.parentClass.status_label.setStyleSheet("color: red")
+                self.parentClass.status_label.setStyleSheet("color: orange")
                 self.actionclass.isThreading = False
                 self.finished.emit()
                 return
@@ -57,14 +57,14 @@ try:
                 self.userMemory = int(self.userMemory)
             except ValueError:
                 self.parentClass.status_label.setText("Invalid RAM provided.")
-                self.parentClass.status_label.setStyleSheet("color: red")
+                self.parentClass.status_label.setStyleSheet("color: orange")
                 self.actionclass.isThreading = False
                 self.finished.emit()
                 return
 
             if self.systemMemory <= self.userMemory:
                 self.parentClass.status_label.setText("Too much RAM provided.")
-                self.parentClass.status_label.setStyleSheet("color: red")
+                self.parentClass.status_label.setStyleSheet("color: orange")
                 self.actionclass.isThreading = False
                 self.finished.emit()
                 return
