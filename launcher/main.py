@@ -10,12 +10,14 @@ try:
     import os
     import platform
     import re
+    import json
 
     from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QMessageBox, QPushButton, QLineEdit
     from PyQt5.QtGui import QPixmap, QFont, QFontDatabase
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
     
     import modules.backUtils as Utils
+    from modules.mciHandler import MinecraftLauncher
 
     # configure primary directory as per os
     plat = platform.system().lower()
@@ -35,6 +37,18 @@ try:
             self.actionclass = actionclass
             self.parentClass = parent
             self.systemMemory = Utils.getRam()
+
+            try:
+                self.validityData = json.load(open(APPDATA + '.bscraft/launcherValidity.json', 'r'))
+            except:
+                self.validityData = {
+                    'javaValid': False,
+                    'forgeValid': False,
+                    'vanillaValid': False,
+                    'modpackValid': False
+                }
+
+                json.dump(self.validityData, open(APPDATA + '.bscraft/launcherValidity.json', 'w'))
     
         def run(self):
             # ensure all variables are valid
@@ -68,11 +82,19 @@ try:
                 self.actionclass.isThreading = False
                 self.finished.emit()
                 return
-            
-            print('valid username: {}'.format(self.mcUsername))
-            print('valid ram: {}'.format(self.userMemory))
 
-            #minecraft = MinecraftLauncher(APPDATA + '.bscraft/', 'zukashix', '200')
+
+            self.Launcher = MinecraftLauncher(APPDATA + '.bscraft', self.mcUsername, self.userMemory)
+
+            # begin installation tasks
+            # install java
+            if not self.validityData["javaValid"]:
+                self.Launcher.installJava()
+                
+                self.validityData = json.load(open(APPDATA + '.bscraft/launcherValidity.json', 'r'))
+                self.validityData["javaValid"] = True
+                json.dump(self.validityData, open(APPDATA + '.bscraft/launcherValidity.json', 'w'))
+
             
             self.actionclass.isThreading = False
             self.finished.emit()
@@ -172,7 +194,7 @@ try:
             self.username_textbox = QLineEdit(self)
             self.username_textbox.setGeometry(475, 275, 200, 30)
             self.username_textbox.setFont(QFont("Minecraftia", 15))
-            self.username_textbox.setText("Player0")
+            #self.username_textbox.setText("Player0")
             self.username_textbox.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
             self.ram_textbox = QLineEdit(self)
