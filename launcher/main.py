@@ -50,6 +50,14 @@ try:
 
                 json.dump(self.validityData, open(APPDATA + '.bscraft/launcherValidity.json', 'w'))
     
+
+        def _fakeSetStatus(self):
+            pass
+
+
+        #def _setProgressStatus
+
+
         def run(self):
             # ensure all variables are valid
             # validate username
