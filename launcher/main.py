@@ -7,6 +7,8 @@ import os
 import platform
 import re
 import json
+import traceback
+import shutil
 
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QMessageBox, QPushButton, QLineEdit
 from PyQt5.QtGui import QPixmap, QFont, QFontDatabase
@@ -16,13 +18,6 @@ import modules.backUtils as Utils
 from modules.mciHandler import MinecraftLauncher
 
 
-# configure primary directory as per os
-plat = platform.system().lower()
-if 'win' in plat:
-    APPDATA = os.getenv("APPDATA").replace("\\", "/") + '/' # windows
-else:
-    APPDATA = os.getenv("HOME") + '/' # linux
-
 
 class ExceptionHandler(QObject):
     """class to handle exceptions"""
@@ -31,8 +26,13 @@ class ExceptionHandler(QObject):
     def __init__(self):
         super().__init__()
 
-    def exception_hook(self, exctype, value, traceback):
-        error_message = "An internal error occurred:\n\n" + str(value.__str__())
+    def exception_hook(self, exctype, value, tBack):
+        errorLog1 = traceback.format_exception(exctype, value, tBack, None)
+        errorLog2 = ''
+        for err in errorLog1:
+            errorLog2 = errorLog2 + err + ' '
+        error_message = "An internal error occurred:\n\n" + errorLog2
+        print(error_message)
         with open('./BSCraft_Launcher_Error.txt', 'w') as logfile:
             logfile.write(error_message)
         self.errorOccurred.emit(error_message)
@@ -59,32 +59,32 @@ class playGameThread(QThread):
             self.validityData = {
                 'javaValid': False,
                 'forgeValid': False,
-                'vanillaValid': False,
+                'vanillaValid': False, # remove as will remove vanilla and install only forge in future
                 'modpackValid': False
             }
 
             json.dump(self.validityData, open(APPDATA + '.bscraft/launcherValidity.json', 'w'))
 
 
-    def _fakeMaxProgress(self, fake):
+    def _fakeMaxProgress(self, fake): # func to do nothing (used to pass as callback to mc launcher api)
         pass
 
 
-    def _setProgressMax(self, maxProgress):
+    def _setProgressMax(self, maxProgress): # set maximum progress
         self._progressMax = maxProgress
 
 
-    def _writeProgressStatus(self, progress):
+    def _writeProgressStatus(self, progress): # set progress percentage
         if self._progressMax != 0:
             currentStatus = int((progress/self._progressMax)*100)
             if self._progressLast == currentStatus:
                 pass
             else:
-                self.parentClass.status_label.setText(self._progressStatusText.replace('<>', str(currentStatus)))
+                self.parentClass.status_label.setText(self._progressStatusText.format(str(currentStatus)))
                 self._progressLast = currentStatus
 
 
-    def run(self):
+    def run(self): # run thread
         # ensure all variables are valid
         # validate username
         usernameValid = False
@@ -118,24 +118,49 @@ class playGameThread(QThread):
             return
 
 
+        # check for internet and downloaded files
+        if not Utils.checkInternet() and not self.validityData['javaValid'] and not self.validityData['forgeValid'] and not self.validityData['vanillaValid'] and not self.validityData['modpackValid']: # remove vanilla as will only install forge in the future
+            self.parentClass.status_label.setText("Server unreachable & files missing.")
+            self.parentClass.status_label.setStyleSheet("color: orange")
+            self.actionclass.isThreading = False
+            self.finished.emit()
+            return
+
+
         self.Launcher = MinecraftLauncher(APPDATA + '.bscraft', self.mcUsername, self.userMemory)
         progressCallback = {"setStatus": self._fakeMaxProgress, "setProgress": self._writeProgressStatus, "setMax": self._setProgressMax}
 
         # begin installation tasks
         # install java
         if not self.validityData["javaValid"]:
-            self._progressStatusText = 'Installing Java... [<>%]'
+            self._progressStatusText = 'Installing Java... [{}%]'
             self.parentClass.status_label.setStyleSheet("color: lightgreen")
+
+            try:
+                shutil.rmtree(APPDATA + '.bscraft/runtime/')
+            except FileNotFoundError:
+                pass
             
             self.Launcher.installJava(progressCallback)
-            self._totalProgress = 0
             
             self.validityData = json.load(open(APPDATA + '.bscraft/launcherValidity.json', 'r'))
             self.validityData["javaValid"] = True
             json.dump(self.validityData, open(APPDATA + '.bscraft/launcherValidity.json', 'w'))
 
-            self.parentClass.status_label.setText("Java Installed!")
+
+        # install vanilla mc (only install forge in final version as it also installs mc)
+        if not self.validityData["vanillaValid"]:
+            self._progressStatusText = 'Installing Minecraft... [{}%]'
+            self.parentClass.status_label.setStyleSheet("color: lightgreen")
+            
+            self.Launcher.installVanilla(progressCallback)
+            
+            self.validityData = json.load(open(APPDATA + '.bscraft/launcherValidity.json', 'r'))
+            self.validityData["vanillaValid"] = True
+            json.dump(self.validityData, open(APPDATA + '.bscraft/launcherValidity.json', 'w'))
+
         
+        print('[>] PlayGame Thread is dying.')
         self.actionclass.isThreading = False
         self.finished.emit()
 
@@ -147,8 +172,10 @@ class LauncherActions():
         self.selfObj = selfObj    
 
     def quitLauncher(self): # funcion to exit launcher
+        self.selfObj.quit_button.setStyleSheet('color: gray; background-color: #fc8eac; border: 3px solid #e75480')
         if self.isThreading:
             QMessageBox.information(self.selfObj, "BSCraft Launcher", "Cannot exit, a launcher task is running.")
+            self.selfObj.quit_button.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
         else:
             QApplication.quit()
 
@@ -202,7 +229,7 @@ class DisplayGUI(QMainWindow):
 
         # Set labels
         self.status_label = QLabel(self)
-        self.status_label.setGeometry(40, 400, 350, 40)
+        self.status_label.setGeometry(40, 400, 750, 50)
         self.status_label.setFont(QFont("Minecraftia", 15))
         self.status_label.setText("Ready!")
         self.status_label.setStyleSheet("color: lightgreen")
@@ -262,6 +289,19 @@ class DisplayGUI(QMainWindow):
 
 
 if __name__ == "__main__":
+    # configure primary directory as per os
+    plat = platform.system().lower()
+    if 'win' in plat:
+        APPDATA = os.getenv("APPDATA").replace("\\", "/") + '/' # windows
+    else:
+        APPDATA = os.getenv("HOME") + '/' # linux
+
+    # make .bscraft working folder if it doesnt exist
+    try:
+        os.makedirs(APPDATA + '.bscraft/')
+    except FileExistsError:
+        pass
+
     # run app
     app = QApplication(sys.argv)
     window = DisplayGUI()

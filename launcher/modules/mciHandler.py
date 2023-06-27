@@ -20,3 +20,6 @@ class MinecraftLauncher():
     def installJava(self, progressReport):
         mclib.runtime.install_jvm_runtime(self.mcJavaVersion, self.minecraftDirectory, progressReport)
 
+    def installVanilla(self, progressReport): # will not install vanilla, only forge in future
+        mclib.install.install_minecraft_version(self.mcVerVanilla, self.minecraftDirectory, progressReport)
+

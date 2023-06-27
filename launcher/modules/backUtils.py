@@ -3,16 +3,20 @@ import requests
 import psutil
 
 # define web headers
-headers = {
+legacyHeaders = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
     }
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
+}
 
 # function to check internet connection
 def checkInternet() -> bool:
     try:
         requests.get('https://updater.braydenedgar.com/', timeout=10, headers=headers)
         return True
-    except:
+    except (requests.ConnectionError, requests.Timeout):
         return False
 
 def getRam() -> int:
