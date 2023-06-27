@@ -4,7 +4,7 @@ import modules.backUtils as Utils
 
 class MinecraftLauncher():
     def __init__(self, mainDIR, username, ram):
-        repoData = requests.get("https://updater.braxtonelmer.com/BSCraft/launcher_data.json", headers=Utils.headers).json()
+        repoData = requests.get("https://updater.braydenedgar.com/BSCraft/launcher_data.json", headers=Utils.headers).json()
 
         self.launchMemory = str(ram)
         self.launchUsername = username
@@ -19,3 +19,4 @@ class MinecraftLauncher():
     
     def installJava(self, progressReport):
         mclib.runtime.install_jvm_runtime(self.mcJavaVersion, self.minecraftDirectory, progressReport)
+

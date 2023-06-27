@@ -10,7 +10,7 @@ headers = {
 # function to check internet connection
 def checkInternet() -> bool:
     try:
-        requests.get('https://updater.braxtonelmer.com/', timeout=10, headers=headers)
+        requests.get('https://updater.braydenedgar.com/', timeout=10, headers=headers)
         return True
     except:
         return False
