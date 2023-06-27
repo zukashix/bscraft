@@ -145,7 +145,6 @@ try:
             self.statusText = statusText
 
             # load external resources
-            QFontDatabase.addApplicationFont("resources/mcfont.ttf")
             QFontDatabase.addApplicationFont("resources/Minecraftia.ttf")
 
             # Set window properties

@@ -186,7 +186,6 @@ class DisplayGUI(QMainWindow):
             ramPlaceholder = '6144'
 
         # load external resources
-        QFontDatabase.addApplicationFont("resources/mcfont.ttf")
         QFontDatabase.addApplicationFont("resources/Minecraftia.ttf")
 
         # Set window properties
