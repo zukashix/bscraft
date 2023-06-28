@@ -1,3 +1,6 @@
+# Common utilities for BSCraft Launcher
+# Author: zukashix
+
 # import required modules
 import requests
 import psutil
@@ -19,7 +22,7 @@ def checkInternet() -> bool:
     except (requests.ConnectionError, requests.Timeout):
         return False
 
-def getRam() -> int:
+def getRam() -> int: # function to get ram in mb
     return int(psutil.virtual_memory().total / (1024**2))
 
 # function to download a file using url 
