@@ -9,7 +9,7 @@ BSCraft is a vanilla+ lightweight minecraft modpack
 - Bootstrapper development-platform test (ubuntu/aarch64) = Success ((2))
 - Bootstrapper target-platform test (windows/amd64) = Success ((3))
 - Launcher bootstrapper platform-build release (exe/windows/amd64) = Pending ((4))
-- Work on main launcher = 50% Complete (GUI & backend ready, Minecraft API in progress) ((5))
+- Work on main launcher = 75% Complete (GUI & backend ready, Minecraft API ready, Modpack install/update sequence is pending) ((5))
 
 ## Development Target
 
