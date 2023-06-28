@@ -2,3 +2,5 @@ nohup.out
 launcher/modules/__pycache__/
 reference.py
 BSCraft_Launcher_Error.txt
+launchCMD.txt
+logs/

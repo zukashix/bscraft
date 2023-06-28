@@ -9,6 +9,7 @@ import re
 import json
 import traceback
 import shutil
+import subprocess
 
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QMessageBox, QPushButton, QLineEdit
 from PyQt5.QtGui import QPixmap, QFont, QFontDatabase
@@ -58,8 +59,7 @@ class playGameThread(QThread):
         except:
             self.validityData = {
                 'javaValid': False,
-                'forgeValid': False,
-                'vanillaValid': False, # remove as will remove vanilla and install only forge in future
+                'minecraftValid': False,
                 'modpackValid': False
             }
 
@@ -84,7 +84,17 @@ class playGameThread(QThread):
                 self._progressLast = currentStatus
 
 
+    def _updateValidity(self, tag: str, value: bool):
+        self.validityData = json.load(open(APPDATA + '.bscraft/launcherValidity.json', 'r'))
+        self.validityData[tag] = value
+        json.dump(self.validityData, open(APPDATA + '.bscraft/launcherValidity.json', 'w'))
+
+
     def run(self): # run thread
+        # announce that thread is run through status
+        self.parentClass.status_label.setText('Processing Data...')
+        self.parentClass.status_label.setStyleSheet("color: lightgreen")
+
         # ensure all variables are valid
         # validate username
         usernameValid = False
@@ -119,16 +129,15 @@ class playGameThread(QThread):
 
 
         # check for internet and downloaded files
-        if not Utils.checkInternet() and not self.validityData['javaValid'] and not self.validityData['forgeValid'] and not self.validityData['vanillaValid'] and not self.validityData['modpackValid']: # remove vanilla as will only install forge in the future
+        if not Utils.checkInternet() and not self.validityData['javaValid'] and not self.validityData['minecraftValid'] and not self.validityData['modpackValid']:
             self.parentClass.status_label.setText("Server unreachable & files missing.")
             self.parentClass.status_label.setStyleSheet("color: orange")
             self.actionclass.isThreading = False
             self.finished.emit()
             return
 
-
-        self.Launcher = MinecraftLauncher(APPDATA + '.bscraft', self.mcUsername, self.userMemory)
         progressCallback = {"setStatus": self._fakeMaxProgress, "setProgress": self._writeProgressStatus, "setMax": self._setProgressMax}
+        self.Launcher = MinecraftLauncher(APPDATA + '.bscraft', self.mcUsername, self.userMemory, progressCallback)
 
         # begin installation tasks
         # install java
@@ -141,26 +150,41 @@ class playGameThread(QThread):
             except FileNotFoundError:
                 pass
             
-            self.Launcher.installJava(progressCallback)
+            self.Launcher.installJava()
             
-            self.validityData = json.load(open(APPDATA + '.bscraft/launcherValidity.json', 'r'))
-            self.validityData["javaValid"] = True
-            json.dump(self.validityData, open(APPDATA + '.bscraft/launcherValidity.json', 'w'))
+            self._updateValidity('javaValid', True)
 
 
-        # install vanilla mc (only install forge in final version as it also installs mc)
-        if not self.validityData["vanillaValid"]:
+        # install core minecraft
+        if not self.validityData["minecraftValid"]:
             self._progressStatusText = 'Installing Minecraft... [{}%]'
             self.parentClass.status_label.setStyleSheet("color: lightgreen")
             
-            self.Launcher.installVanilla(progressCallback)
+            self.Launcher.installMinecraft()
             
-            self.validityData = json.load(open(APPDATA + '.bscraft/launcherValidity.json', 'r'))
-            self.validityData["vanillaValid"] = True
-            json.dump(self.validityData, open(APPDATA + '.bscraft/launcherValidity.json', 'w'))
+            self._updateValidity('minecraftValid', True)
 
-        
-        print('[>] PlayGame Thread is dying.')
+
+        # install modpack files
+        if not self.validityData["modpackValid"]:
+            self._progressStatusText = 'Installing Modpack...'
+            self.parentClass.status_label.setStyleSheet("color: lightgreen")
+            
+            self.Launcher.installModpack()
+            
+            self._updateValidity('modpackValid', True)
+
+
+        # announce and init required launcher functions
+        self.parentClass.status_label.setText('Initializing Minecraft..')
+        self.parentClass.status_label.setStyleSheet("color: lightgreen")
+        spCommand = self.Launcher.getRunCMD()
+
+        # hide launcher window and start game. show window again if game exits and end thread
+        self.parentClass.hide()
+        subprocess.call(spCommand)
+        self.parentClass.show()
+
         self.actionclass.isThreading = False
         self.finished.emit()
 
