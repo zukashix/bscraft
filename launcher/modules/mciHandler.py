@@ -21,7 +21,6 @@ class MinecraftLauncher():
         self.mcJavaVersion = repoData["modpackJavaVersion"]
 
         self.mcForgeID = self.mcVerVanilla + '-forge-' + self.mcForgeVersion.split('-')[1]
-        self.javaPath = 'java'
 
         self.modpackPath = self.minecraftDirectory + '/modpack'
 
@@ -31,7 +30,7 @@ class MinecraftLauncher():
 
 
     def installMinecraft(self):
-        mclib.forge.install_forge_version(self.mcForgeVersion, self.minecraftDirectory, self.progressReport, self.javaPath)
+        mclib.forge.install_forge_version(self.mcForgeVersion, self.minecraftDirectory, self.progressReport, mclib.runtime.get_executable_path(self.mcJavaVersion, self.minecraftDirectory))
 
 
     def installModpack(self):
