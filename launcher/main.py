@@ -210,6 +210,7 @@ class LauncherActions():
         self.isThreading = False
         self.selfObj = selfObj    
 
+
     def quitLauncher(self): # funcion to exit launcher
         self.selfObj.quit_button.setStyleSheet('color: gray; background-color: #fc8eac; border: 3px solid #e75480')
         if self.isThreading:
@@ -218,11 +219,27 @@ class LauncherActions():
         else:
             QApplication.quit()
 
+
+    def invalidateFiles(self):
+        self.selfObj.reset_button.setStyleSheet('color: gray; background-color: #fc8eac; border: 3px solid #e75480')
+        if self.isThreading:
+            QMessageBox.information(self.selfObj, "BSCraft Launcher", "Cannot reset, a launcher task is running.")
+        else:
+            try:
+                os.remove(APPDATA + '.bscraft/launcherValidity.json')
+            except FileNotFoundError:
+                pass
+            finally:
+                QMessageBox.information(self.selfObj, "BSCraft Launcher", "Reset success. Launcher will attempt re-install and verification of files on next game launch.")
+                self.selfObj.reset_button.setStyleSheet('color: red; background-color: #fc8eac; border: 3px solid #e75480')
+
+ 
     def _deleteThread(self): # function to delete thread after task is complete
         if self.thread is not None:
             self.thread.finished.disconnect(self._deleteThread)
             self.thread.deleteLater()
             self.thread = None
+
 
     def playGame(self, username, ram): # function to start thread if play button is clicked
         self.selfObj.play_button.setEnabled(False) # disable play button if thread already running
@@ -304,6 +321,12 @@ class DisplayGUI(QMainWindow):
         self.quit_button.setGeometry(600, 350, 100, 50)
         self.quit_button.setFont(QFont("Minecraftia", 15))
         self.quit_button.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
+
+        self.reset_button = QPushButton("Reset", self)
+        self.reset_button.clicked.connect(self.actionclass.invalidateFiles)
+        self.reset_button.setGeometry(675, 30, 100, 50)
+        self.reset_button.setFont(QFont("Minecraftia", 15))
+        self.reset_button.setStyleSheet('color: red; background-color: #fc8eac; border: 3px solid #e75480')
 
         # set textboxes
         self.username_textbox = QLineEdit(self)
