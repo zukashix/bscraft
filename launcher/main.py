@@ -185,6 +185,10 @@ class playGameThread(QThread):
         self.parentClass.hide()
         subprocess.call(spCommand)
         self.parentClass.show()
+        self.parentClass.activateWindow()
+
+        self.parentClass.status_label.setText("Ready!")
+        self.parentClass.status_label.setStyleSheet("color: lightgreen")
 
         self.actionclass.isThreading = False
         self.finished.emit()
