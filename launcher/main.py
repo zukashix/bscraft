@@ -167,7 +167,8 @@ class playGameThread(QThread):
 
         # install modpack files
         if not self.validityData["modpackValid"]:
-            self._progressStatusText = 'Installing Modpack...'
+            self.parentClass.status_label.setText('Installing Modpack...') 
+            # self._progressStatusText = 'Installing Modpack... [{}%]'
             self.parentClass.status_label.setStyleSheet("color: lightgreen")
             
             self.Launcher.installModpack()
@@ -176,7 +177,7 @@ class playGameThread(QThread):
 
 
         # announce and init required launcher functions
-        self.parentClass.status_label.setText('Initializing Minecraft..')
+        self.parentClass.status_label.setText('Initializing Minecraft...')
         self.parentClass.status_label.setStyleSheet("color: lightgreen")
         spCommand = self.Launcher.getRunCMD()
 

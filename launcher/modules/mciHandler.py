@@ -4,6 +4,7 @@ import modules.backUtils as Utils
 
 import os
 import shutil
+import time
 
 class MinecraftLauncher():
     def __init__(self, mainDIR, username, ram, progressReport):
@@ -39,6 +40,9 @@ class MinecraftLauncher():
         except FileExistsError:
             shutil.rmtree(self.modpackPath)
             os.makedirs(self.modpackPath)
+
+        print('[>] Simulating modpack installation by sleeping for 5s.')
+        time.sleep(5)
 
     
     def getRunCMD(self):
