@@ -128,6 +128,14 @@ class playGameThread(QThread):
             return
 
 
+        # save user data in file
+        userData = {
+            'usernamePlaceholder': self.mcUsername, 'ramPlaceholder': str(self.userMemory)
+        }
+
+        json.dump(userData, open(APPDATA + '.bscraft/BSCUserData.json', 'w'))
+
+
         # check for internet and downloaded files
         if not Utils.checkInternet() and not self.validityData['javaValid'] and not self.validityData['minecraftValid'] and not self.validityData['modpackValid']:
             self.parentClass.status_label.setText("Server unreachable & files missing.")
@@ -183,7 +191,9 @@ class playGameThread(QThread):
 
         # hide launcher window and start game. show window again if game exits and end thread
         self.parentClass.hide()
+
         subprocess.call(spCommand)
+
         self.parentClass.show()
         self.parentClass.activateWindow()
 
@@ -235,11 +245,18 @@ class DisplayGUI(QMainWindow):
         self.exception_handler = ExceptionHandler()
         self.exception_handler.errorOccurred.connect(self.display_error)
 
-        ram = Utils.getRam()
-        if ram < 5000:
-            ramPlaceholder = '3072'
-        else:
-            ramPlaceholder = '6144'
+        try:
+            userData = json.load(open(APPDATA + '.bscraft/BSCUserData.json', 'r'))
+            usernamePlaceholder = userData['usernamePlaceholder']
+            ramPlaceholder = userData['ramPlaceholder']
+        except FileNotFoundError:
+            ram = Utils.getRam()
+            if ram < 5000:
+                ramPlaceholder = '3072'
+            else:
+                ramPlaceholder = '6144'
+
+            usernamePlaceholder = ''
 
         # load external resources
         QFontDatabase.addApplicationFont("resources/Minecraftia.ttf")
@@ -292,7 +309,7 @@ class DisplayGUI(QMainWindow):
         self.username_textbox = QLineEdit(self)
         self.username_textbox.setGeometry(475, 275, 200, 30)
         self.username_textbox.setFont(QFont("Minecraftia", 15))
-        #self.username_textbox.setText("Player0")
+        self.username_textbox.setText(usernamePlaceholder)
         self.username_textbox.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
         self.ram_textbox = QLineEdit(self)
