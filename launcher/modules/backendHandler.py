@@ -224,7 +224,10 @@ class LauncherActions():
             if os.path.isfile(APPDATA + '.bscraft/launcherValidity.json'):
                 os.remove(APPDATA + '.bscraft/launcherValidity.json')
 
-            QMessageBox.information(self.selfObj, "BSCraft Launcher", "Reset success. Launcher will attempt re-install and verification of files on next game launch.")
+            if os.path.isfile(APPDATA + '.bscraft/modpack/mpCVersion.json'):
+                os.remove(APPDATA + '.bscraft/modpack/mpCVersion.json')
+
+            QMessageBox.information(self.selfObj, "BSCraft Launcher", "Invalidation success. Launcher will attempt re-install and verification of files on next game launch.")
         
         self.selfObj.reset_button.setStyleSheet('color: red; background-color: #fc8eac; border: 3px solid #e75480')
 
