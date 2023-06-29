@@ -10,6 +10,7 @@ import subprocess
 
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QThread, pyqtSignal
+import requests
 
 import modules.backUtils as Utils
 from modules.mciHandler import MinecraftLauncher
@@ -63,6 +64,11 @@ class playGameThread(QThread):
                 self._progressLast = currentStatus
 
 
+    def _setStatusText(self, text: str, color: str):
+        self.parentClass.status_label.setText(text)
+        self.parentClass.status_label.setStyleSheet("color: {}".format(color))
+
+
     def _updateValidity(self, tag: str, value: bool):
         self.validityData = json.load(open(APPDATA + '.bscraft/launcherValidity.json', 'r'))
         self.validityData[tag] = value
@@ -71,8 +77,7 @@ class playGameThread(QThread):
 
     def run(self): # run thread
         # announce that thread is run through status
-        self.parentClass.status_label.setText('Processing Data...')
-        self.parentClass.status_label.setStyleSheet("color: lightgreen")
+        self._setStatusText('Processing Data...', 'lightgreen')
 
         # ensure all variables are valid
         # validate username
@@ -83,8 +88,7 @@ class playGameThread(QThread):
                 usernameValid = True
 
         if not usernameValid:
-            self.parentClass.status_label.setText("Invalid Username.")
-            self.parentClass.status_label.setStyleSheet("color: orange")
+            self._setStatusText('Invalid Username.', 'orange')
             self.actionclass.isThreading = False
             self.finished.emit()
             return
@@ -93,15 +97,13 @@ class playGameThread(QThread):
         try:
             self.userMemory = int(self.userMemory)
         except ValueError:
-            self.parentClass.status_label.setText("Invalid RAM provided.")
-            self.parentClass.status_label.setStyleSheet("color: orange")
+            self._setStatusText('Invalid RAM provided.', 'orange')
             self.actionclass.isThreading = False
             self.finished.emit()
             return
 
         if self.systemMemory <= self.userMemory:
-            self.parentClass.status_label.setText("Too much RAM provided.")
-            self.parentClass.status_label.setStyleSheet("color: orange")
+            self._setStatusText('Too much RAM provided.', 'orange')
             self.actionclass.isThreading = False
             self.finished.emit()
             return
@@ -117,14 +119,28 @@ class playGameThread(QThread):
 
         # check for internet and downloaded files
         if not Utils.checkInternet() and not self.validityData['javaValid'] and not self.validityData['minecraftValid'] and not self.validityData['modpackValid']:
-            self.parentClass.status_label.setText("Server unreachable & files missing.")
-            self.parentClass.status_label.setStyleSheet("color: orange")
+            self._setStatusText("Server unreachable & files missing.", 'orange')
             self.actionclass.isThreading = False
             self.finished.emit()
             return
+        
 
-        progressCallback = {"setStatus": self._fakeMaxProgress, "setProgress": self._writeProgressStatus, "setMax": self._setProgressMax}
-        self.Launcher = MinecraftLauncher(APPDATA + '.bscraft', self.mcUsername, self.userMemory, progressCallback)
+        if not Utils.checkInternet():
+            if os.path.isfile(APPDATA + '.bscraft/lastRepoData.json'):
+                repoData = json.load(open(APPDATA + '.bscraft/lastRepoData.json', 'r'))
+            else:
+                self._setStatusText("Server unreachable & files missing.", 'orange')
+                self.actionclass.isThreading = False
+                self.finished.emit()
+                return
+            
+        else:
+            repoData = requests.get("https://updater.braydenedgar.com/BSCraft/launcher_data.json", headers=Utils.headers).json()
+            json.dump(repoData, open(APPDATA + '.bscraft/lastRepoData.json', 'w'))
+
+
+        progressCallback = {"setStatus": self._fakeMaxProgress, "setProgress": self._writeProgressStatus, "setMax": self._setProgressMax, "setText": self._setStatusText}
+        self.Launcher = MinecraftLauncher(APPDATA + '.bscraft', self.mcUsername, self.userMemory, progressCallback, repoData)
 
         # begin installation tasks
         # install java
@@ -132,10 +148,8 @@ class playGameThread(QThread):
             self._progressStatusText = 'Installing Java... [{}%]'
             self.parentClass.status_label.setStyleSheet("color: lightgreen")
 
-            try:
+            if os.path.isdir(APPDATA + '.bscraft/runtime/'):
                 shutil.rmtree(APPDATA + '.bscraft/runtime/')
-            except FileNotFoundError:
-                pass
             
             self.Launcher.installJava()
             
@@ -153,19 +167,18 @@ class playGameThread(QThread):
 
 
         # install modpack files
-        if not self.validityData["modpackValid"]:
-            self.parentClass.status_label.setText('Installing Modpack...') 
-            # self._progressStatusText = 'Installing Modpack... [{}%]'
+        
+        if Utils.checkInternet():
+            self._progressStatusText = "Downloading Modpack... [{}%]"
             self.parentClass.status_label.setStyleSheet("color: lightgreen")
-            
+
             self.Launcher.installModpack()
-            
+
             self._updateValidity('modpackValid', True)
 
 
         # announce and init required launcher functions
-        self.parentClass.status_label.setText('Initializing Minecraft...')
-        self.parentClass.status_label.setStyleSheet("color: lightgreen")
+        self._setStatusText("Initializing Minecraft...", 'lightgreen')
         spCommand = self.Launcher.getRunCMD()
 
         # hide launcher window and start game. show window again if game exits and end thread
@@ -176,8 +189,7 @@ class playGameThread(QThread):
         self.parentClass.show()
         self.parentClass.activateWindow()
 
-        self.parentClass.status_label.setText("Ready!")
-        self.parentClass.status_label.setStyleSheet("color: lightgreen")
+        self._setStatusText("Ready!", 'lightgreen')
 
         self.actionclass.isThreading = False
         self.finished.emit()
@@ -202,19 +214,19 @@ class LauncherActions():
             QApplication.quit()
 
 
-    def invalidateFiles(self):
+    def invalidateFiles(self): # function to invalidate launcher files resulting in re-installation/verification of all files
         self.selfObj.reset_button.setStyleSheet('color: gray; background-color: #fc8eac; border: 3px solid #e75480')
+
         if self.isThreading:
             QMessageBox.information(self.selfObj, "BSCraft Launcher", "Cannot reset, a launcher task is running.")
-            self.selfObj.reset_button.setStyleSheet('color: red; background-color: #fc8eac; border: 3px solid #e75480')
+    
         else:
-            try:
+            if os.path.isfile(APPDATA + '.bscraft/launcherValidity.json'):
                 os.remove(APPDATA + '.bscraft/launcherValidity.json')
-            except FileNotFoundError:
-                pass
-            finally:
-                QMessageBox.information(self.selfObj, "BSCraft Launcher", "Reset success. Launcher will attempt re-install and verification of files on next game launch.")
-                self.selfObj.reset_button.setStyleSheet('color: red; background-color: #fc8eac; border: 3px solid #e75480')
+
+            QMessageBox.information(self.selfObj, "BSCraft Launcher", "Reset success. Launcher will attempt re-install and verification of files on next game launch.")
+        
+        self.selfObj.reset_button.setStyleSheet('color: red; background-color: #fc8eac; border: 3px solid #e75480')
 
  
     def _deleteThread(self): # function to delete thread after task is complete
