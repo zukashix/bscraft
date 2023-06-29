@@ -34,9 +34,9 @@ class playGameThread(QThread):
         self._progressMax = 0
         self._progressStatusText = ''
 
-        try:
+        if os.path.isfile(APPDATA + '.bscraft/launcherValidity.json'):
             self.validityData = json.load(open(APPDATA + '.bscraft/launcherValidity.json', 'r'))
-        except:
+        else:
             self.validityData = {
                 'javaValid': False,
                 'minecraftValid': False,

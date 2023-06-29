@@ -45,11 +45,11 @@ class DisplayGUI(QMainWindow):
         self.exception_handler = ExceptionHandler()
         self.exception_handler.errorOccurred.connect(self.display_error)
 
-        try:
+        if os.path.isfile(APPDATA + '.bscraft/BSCUserData.json'):
             userData = json.load(open(APPDATA + '.bscraft/BSCUserData.json', 'r'))
             usernamePlaceholder = userData['usernamePlaceholder']
             ramPlaceholder = userData['ramPlaceholder']
-        except FileNotFoundError:
+        else:
             ram = Utils.getRam()
             if ram < 5000:
                 ramPlaceholder = '3072'
@@ -149,10 +149,8 @@ if __name__ == "__main__":
         APPDATA = os.getenv("HOME") + '/' # linux
 
     # make .bscraft working folder if it doesnt exist
-    try:
+    if not os.path.isdir(APPDATA + '.bscraft/'):
         os.makedirs(APPDATA + '.bscraft/')
-    except FileExistsError:
-        pass
 
     # run app
     app = QApplication(sys.argv)

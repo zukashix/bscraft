@@ -44,16 +44,15 @@ class MinecraftLauncher():
 
     def installModpack(self): # function to install bscraft modpack files (WIP)
         # check for updates / install
-        try:
+
+        if os.path.isfile(self.modpackPath + '/mpCVersion.json'):
             mpLocalData = json.load(open(self.modpackPath + '/mpCVersion.json', 'r'))
             if mpLocalData['local_version'] == self.repoModpackVersion:
                 return
-            else:
-                updateMP = True
-        except FileNotFoundError:
-            updateMP = False
-            if not os.path.isdir(self.modpackPath):
-                os.makedirs(self.modpackPath)
+
+            
+        if not os.path.isdir(self.modpackPath):
+            os.makedirs(self.modpackPath)
 
 
         # Make validity false
@@ -80,15 +79,14 @@ class MinecraftLauncher():
         os.remove(self.modpackPath + '/tmp/modpack-tmp.zip')
 
         # if updating, check for files to remove
-        if updateMP:
-            delData = json.load(self.modpackPath + '/tmp/delData.json')
-            if delData['deleteRequired']:
+        delData = json.load(self.modpackPath + '/tmp/delData.json')
+        if delData['deleteRequired']:
 
-                for rmFile in delData["toDelete"]:
-                    if os.path.isfile(self.modpackPath + '/' + rmFile):
-                        os.remove(self.modpackPath + '/' + rmFile)
+            for rmFile in delData["toDelete"]:
+                if os.path.isfile(self.modpackPath + '/' + rmFile):
+                    os.remove(self.modpackPath + '/' + rmFile)
 
-            os.remove(self.modpackPath + '/tmp/delData.json')
+        os.remove(self.modpackPath + '/tmp/delData.json')
 
         # copy modpack content to game dir
         Utils.copy_folder_contents(self.modpackPath + '/tmp/', self.modpackPath)
