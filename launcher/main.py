@@ -76,19 +76,19 @@ class DisplayGUI(QMainWindow):
         # Set labels
         self.status_label = QLabel(self)
         self.status_label.setGeometry(40, 400, 750, 50)
-        self.status_label.setFont(QFont("Minecraftia", 15))
+        self.status_label.setFont(QFont("Minecraftia", 12))
         self.status_label.setText("Ready!")
         self.status_label.setStyleSheet("color: lightgreen")
 
         self.username_sign_label = QLabel(self)
         self.username_sign_label.setGeometry(475, 240, 350, 40)
-        self.username_sign_label.setFont(QFont("Minecraftia", 15))
+        self.username_sign_label.setFont(QFont("Minecraftia", 12))
         self.username_sign_label.setText("Username:")
         self.username_sign_label.setStyleSheet("color: white")
 
         self.ram_sign_label = QLabel(self)
         self.ram_sign_label.setGeometry(475, 165, 350, 40)
-        self.ram_sign_label.setFont(QFont("Minecraftia", 15))
+        self.ram_sign_label.setFont(QFont("Minecraftia", 12))
         self.ram_sign_label.setText("RAM [In MB]:")
         self.ram_sign_label.setStyleSheet("color: white")
 
@@ -96,31 +96,31 @@ class DisplayGUI(QMainWindow):
         self.play_button = QPushButton("Play!", self)
         self.play_button.clicked.connect(lambda: self.actionclass.playGame(self.username_textbox.text(), self.ram_textbox.text()))
         self.play_button.setGeometry(450, 350, 100, 50)
-        self.play_button.setFont(QFont("Minecraftia", 15))
+        self.play_button.setFont(QFont("Minecraftia", 12))
         self.play_button.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
         self.quit_button = QPushButton("Quit", self)
         self.quit_button.clicked.connect(self.actionclass.quitLauncher)
         self.quit_button.setGeometry(600, 350, 100, 50)
-        self.quit_button.setFont(QFont("Minecraftia", 15))
+        self.quit_button.setFont(QFont("Minecraftia", 12))
         self.quit_button.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
         self.reset_button = QPushButton("Invalidate", self)
         self.reset_button.clicked.connect(self.actionclass.invalidateFiles)
         self.reset_button.setGeometry(625, 30, 150, 50)
-        self.reset_button.setFont(QFont("Minecraftia", 15))
+        self.reset_button.setFont(QFont("Minecraftia", 12))
         self.reset_button.setStyleSheet('color: red; background-color: #fc8eac; border: 3px solid #e75480')
 
         # set textboxes
         self.username_textbox = QLineEdit(self)
         self.username_textbox.setGeometry(475, 275, 200, 30)
-        self.username_textbox.setFont(QFont("Minecraftia", 15))
+        self.username_textbox.setFont(QFont("Minecraftia", 12))
         self.username_textbox.setText(usernamePlaceholder)
         self.username_textbox.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
         self.ram_textbox = QLineEdit(self)
         self.ram_textbox.setGeometry(475, 200, 200, 30)
-        self.ram_textbox.setFont(QFont("Minecraftia", 15))
+        self.ram_textbox.setFont(QFont("Minecraftia", 12))
         self.ram_textbox.setText(ramPlaceholder)
         self.ram_textbox.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
