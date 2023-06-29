@@ -218,7 +218,7 @@ class LauncherActions():
         self.selfObj.reset_button.setStyleSheet('color: gray; background-color: #fc8eac; border: 3px solid #e75480')
 
         if self.isThreading:
-            QMessageBox.information(self.selfObj, "BSCraft Launcher", "Cannot reset, a launcher task is running.")
+            QMessageBox.information(self.selfObj, "BSCraft Launcher", "Cannot invalidate data, a launcher task is running.")
     
         else:
             if os.path.isfile(APPDATA + '.bscraft/launcherValidity.json'):

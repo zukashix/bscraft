@@ -34,6 +34,7 @@ def downloadFile(file_url, file_loc, callback = None):
 
     if callback != None:
         callback["setMax"](int(r.headers.get('content-length', 0)))
+        downloadedSize = 0
 
     with open(file_loc, 'wb') as ufile:
         for chunk in r.iter_content(chunk_size=1024):
@@ -44,7 +45,8 @@ def downloadFile(file_url, file_loc, callback = None):
                 ufile.flush()
 
                 if callback != None:
-                    callback["setProgress"](len(chunk))
+                    downloadedSize += len(chunk)
+                    callback["setProgress"](downloadedSize)
 
 
 def generate_offline_uuid(username):
@@ -58,7 +60,7 @@ def generate_offline_uuid(username):
     return formatted_uuid
 
 
-def copy_folder_contents(self, source_folder, destination_folder):
+def copy_folder_contents(source_folder, destination_folder):
     # Iterate through all the files and folders in the source folder
     for root, dirs, files in os.walk(source_folder):
         # Create the corresponding folder structure in the destination folder

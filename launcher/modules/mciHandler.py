@@ -58,7 +58,7 @@ class MinecraftLauncher():
         # Make validity false
         validityData = json.load(open(self.minecraftDirectory + '/launcherValidity.json', 'r'))
         validityData["modpackValid"] = False
-        json.dump(validityData, open(self.minecraftDirectory + '.bscraft/launcherValidity.json', 'w'))
+        json.dump(validityData, open(self.minecraftDirectory + '/launcherValidity.json', 'w'))
         
         # make temp dir
         if os.path.isdir(self.modpackPath + '/tmp/'):
@@ -79,7 +79,7 @@ class MinecraftLauncher():
         os.remove(self.modpackPath + '/tmp/modpack-tmp.zip')
 
         # if updating, check for files to remove
-        delData = json.load(self.modpackPath + '/tmp/delData.json')
+        delData = json.load(open(self.modpackPath + '/tmp/delData.json', 'r'))
         if delData['deleteRequired']:
 
             for rmFile in delData["toDelete"]:
