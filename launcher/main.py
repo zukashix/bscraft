@@ -105,7 +105,7 @@ class DisplayGUI(QMainWindow):
         self.quit_button.setFont(QFont("Minecraftia", 12))
         self.quit_button.setStyleSheet('color: white; background-color: #fc8eac; border: 3px solid #e75480')
 
-        self.reset_button = QPushButton("Invalidate", self)
+        self.reset_button = QPushButton("Validate", self)
         self.reset_button.clicked.connect(self.actionclass.invalidateFiles)
         self.reset_button.setGeometry(625, 30, 150, 50)
         self.reset_button.setFont(QFont("Minecraftia", 12))
