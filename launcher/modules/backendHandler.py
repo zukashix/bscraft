@@ -224,7 +224,7 @@ class LauncherActions():
             promptBox = QMessageBox(parent=self.selfObj)
             promptBox.setWindowTitle("BSCraft Launcher")
             promptBox.setIcon(QMessageBox.Question)
-            promptBox.setText("Are you sure that you want to invalidate launcher file cache?")
+            promptBox.setText("Are you sure that you want to invalidate launcher file cache?\n(This will make the launcher attempt to redownload all game files)")
             promptBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
             promptBox.setDefaultButton(QMessageBox.No)
             promptResult = promptBox.exec_()
