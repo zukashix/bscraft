@@ -221,13 +221,22 @@ class LauncherActions():
             QMessageBox.information(self.selfObj, "BSCraft Launcher", "Cannot invalidate data, a launcher task is running.")
     
         else:
-            if os.path.isfile(APPDATA + '.bscraft/launcherValidity.json'):
-                os.remove(APPDATA + '.bscraft/launcherValidity.json')
+            promptBox = QMessageBox(parent=self.selfObj)
+            promptBox.setWindowTitle("BSCraft Launcher")
+            promptBox.setIcon(QMessageBox.Question)
+            promptBox.setText("Are you sure that you want to invalidate launcher file cache?")
+            promptBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            promptBox.setDefaultButton(QMessageBox.No)
+            promptResult = promptBox.exec_()
 
-            if os.path.isfile(APPDATA + '.bscraft/modpack/mpCVersion.json'):
-                os.remove(APPDATA + '.bscraft/modpack/mpCVersion.json')
+            if promptResult == QMessageBox.Yes:
+                if os.path.isfile(APPDATA + '.bscraft/launcherValidity.json'):
+                    os.remove(APPDATA + '.bscraft/launcherValidity.json')
 
-            QMessageBox.information(self.selfObj, "BSCraft Launcher", "Invalidation success. Launcher will attempt re-install and verification of files on next game launch.")
+                if os.path.isfile(APPDATA + '.bscraft/modpack/mpCVersion.json'):
+                    os.remove(APPDATA + '.bscraft/modpack/mpCVersion.json')
+
+                QMessageBox.information(self.selfObj, "BSCraft Launcher", "Invalidation success. Launcher will attempt re-install and verification of files on next game launch.")
         
         self.selfObj.reset_button.setStyleSheet('color: red; background-color: #fc8eac; border: 3px solid #e75480')
 
