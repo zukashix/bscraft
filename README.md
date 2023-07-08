@@ -12,8 +12,8 @@ BSCraft is a vanilla+ lightweight minecraft modpack
 <br><br>
 - Work on main launcher = Complete ((5))
 - Launcher development-platform test (ubuntu/aarch64) = Success ((6))
-- Launcher target-platform test (windows/amd64) = Pending ((7))
-- Launcher target-build release (exe/windows/amd64) = Waiting for (7) ((8))
+- Launcher target-platform test (windows/amd64) = Success ((7))
+- Launcher target-build release (exe/windows/amd64) = Pending ((8))
 
 ## Development Target
 
@@ -29,7 +29,7 @@ BSCraft is a vanilla+ lightweight minecraft modpack
 - Ensure Python 3.10.6 64-bit is installed.
 - `git clone` OR download this repository and set repo root to working directory.
 - Install modules. `python -m pip install -r requirements.txt`
-- Run the script. `python ./bootstrapper/main.py` (Bootstrapper) or `python ./launcher/main.py` (Launcher)
+- Run the script. `python ./bootstrapper/main.py` (Bootstrapper) or `python ./launcher/main.py` (Launcher) or `python ./server/bot.py` (Skin Server Bot)
 - If background image/fonts do not load, check working directory (must be the root folder, not the `bootstrapper`/`launcher` folder.) OR modify code to point to the files correctly.
 
 ## Developers
