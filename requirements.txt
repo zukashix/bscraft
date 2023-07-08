@@ -2,3 +2,4 @@ PyQt5==5.15.6
 requests
 minecraft-launcher-lib
 psutil
+discord.py
