@@ -135,7 +135,7 @@ class playGameThread(QThread):
                 return
             
         else:
-            repoData = requests.get("https://updater.braydenedgar.com/BSCraft/launcher_data.json", headers=Utils.headers).json()
+            repoData = requests.get("https://updater.braxtonelmer.com/BSCraft/launcher_data.json", headers=Utils.headers).json()
             json.dump(repoData, open(APPDATA + '.bscraft/lastRepoData.json', 'w'))
 
 
