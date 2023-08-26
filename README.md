@@ -3,17 +3,20 @@
 Source for BSCraft 3.0 Launcher & Bootstrapper <br>
 BSCraft is a vanilla+ lightweight minecraft modpack 
 
+## For Players
+- If you are a player wanting to download and play BSCraft, please head over to the "Releases" page and download the latest application.
+
 ## Progress
 
 - Launcher bootstrapper = Complete ((1))
 - Bootstrapper development-platform test (ubuntu/aarch64) = Success ((2))
 - Bootstrapper target-platform test (windows/amd64) = Success ((3))
-- Bootstrapper platform-build release (exe/windows/amd64) = Pending ((4))
+- Bootstrapper platform-build release (exe/windows/amd64) = Success ((4))
 <br><br>
 - Work on main launcher = Complete ((5))
 - Launcher development-platform test (ubuntu/aarch64) = Success ((6))
 - Launcher target-platform test (windows/amd64) = Success ((7))
-- Launcher target-build release (exe/windows/amd64) = Pending ((8))
+- Launcher target-build release (exe/windows/amd64) = Success ((8))
 
 ## Development Target
 
