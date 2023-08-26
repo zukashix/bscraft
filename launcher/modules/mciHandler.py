@@ -33,6 +33,10 @@ class MinecraftLauncher():
 
         self.modpackPath = self.minecraftDirectory + '/modpack'
 
+
+    def returnModpackDir(self):
+        return self.modpackPath
+
     
     def installJava(self): # function to install java runtime
         mclib.runtime.install_jvm_runtime(self.mcJavaVersion, self.minecraftDirectory, self.progressReport)

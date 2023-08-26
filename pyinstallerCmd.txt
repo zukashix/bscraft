@@ -1,0 +1,2 @@
+Launcher ==> pyinstaller -F -n BSCraft -w -i .\resources\bsc.ico --clean .\launcher\main.py
+Bootstrapper ==> pyinstaller -F -n BSCBootstrapper -w -i .\resources\bsc.ico --clean .\bootstrapper\main.py

@@ -1,0 +1,7 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <file alias="bgimg.jpg">resources/bgimg.jpg</file>
+        <file alias="Minecraftia.ttf">resources/Minecraftia.ttf</file>
+    </qresource>
+</RCC>

@@ -183,9 +183,11 @@ class playGameThread(QThread):
 
         # hide launcher window and start game. show window again if game exits and end thread
         self.parentClass.hide()
+        os.chdir(self.Launcher.returnModpackDir())
 
         subprocess.call(spCommand)
 
+        os.chdir(APPDATA + ".bscraft")
         self.parentClass.show()
         self.parentClass.activateWindow()
 

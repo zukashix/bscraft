@@ -14,6 +14,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QObject
 
 import modules.backUtils as Utils
 from modules.backendHandler import LauncherActions
+import modules.resources
 
 
 
@@ -59,7 +60,7 @@ class DisplayGUI(QMainWindow):
             usernamePlaceholder = ''
 
         # load external resources
-        QFontDatabase.addApplicationFont("resources/Minecraftia.ttf")
+        QFontDatabase.addApplicationFont(":/Minecraftia.ttf")
 
         # Set window properties
         self.setWindowTitle("BSCraft Launcher")
@@ -71,7 +72,7 @@ class DisplayGUI(QMainWindow):
         # Set background image
         self.window_bg = QLabel(self)
         self.window_bg.setGeometry(0, 0, 800, 450)
-        self.window_bg.setPixmap(QPixmap("resources/bgimg.jpg"))
+        self.window_bg.setPixmap(QPixmap(":/bgimg.jpg"))
 
         # Set labels
         self.status_label = QLabel(self)

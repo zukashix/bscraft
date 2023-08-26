@@ -13,7 +13,9 @@ import platform
 import requests
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QMessageBox
 from PyQt5.QtGui import QPixmap, QFont, QFontDatabase
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot, QObject, pyqtSignal
+from PyQt5.QtCore import Qt, QTimer
+
+import modules.resources
 
 # configure primary directory as per os
 plat = platform.system().lower()
@@ -154,7 +156,7 @@ class DisplayGUI(QMainWindow):
         super(DisplayGUI, self).__init__()
 
         # load external resources
-        QFontDatabase.addApplicationFont("resources/Minecraftia.ttf")
+        QFontDatabase.addApplicationFont(":/Minecraftia.ttf")
 
         # Set window properties
         self.setWindowTitle("BSCL Updater")
@@ -166,7 +168,7 @@ class DisplayGUI(QMainWindow):
         # Set background image
         self.window_bg = QLabel(self)
         self.window_bg.setGeometry(0, 0, 800, 450)
-        self.window_bg.setPixmap(QPixmap("resources/bgimg.jpg"))
+        self.window_bg.setPixmap(QPixmap(":/bgimg.jpg"))
 
         # set current status text
         self.status_label = QLabel(self)
