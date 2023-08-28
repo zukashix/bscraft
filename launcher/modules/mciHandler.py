@@ -107,7 +107,7 @@ class MinecraftLauncher():
             "username": self.launchUsername,
             "uuid": self.userUUID,
             "token": "",
-            "executablePath": mclib.runtime.get_executable_path(self.mcJavaVersion, self.minecraftDirectory),
+            "executablePath": mclib.runtime.get_executable_path(self.mcJavaVersion, self.minecraftDirectory).replace('java.exe', 'javaw.exe'),
             "jvmArguments": ['-Xmx{}M'.format(self.launchMemory)],
             "launcherName": "BSCraft",
             "gameDirectory": self.modpackPath
