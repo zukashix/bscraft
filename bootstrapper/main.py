@@ -107,6 +107,13 @@ class BackendInitiliazer():
 
     # function to start the launcher process
     def startProcess(self):
+        if not os.path.isfile(APPDATA + '.bscraft/launcher.exe'):
+            data = {"bootstrapper": {"mainExecValid": False, "localVersion": 0.0}}
+            json.dump(data, open(APPDATA + '.bscraft/validation.json', 'w'))
+
+            QMessageBox.critical(None, "BSCraft Launcher", "Launcher file was not found. Please restart program to download launcher again")
+            return
+
         if 'win' in plat:
             args = "start /B {}.bscraft/launcher.exe".format(APPDATA)
         else:
