@@ -43,7 +43,7 @@ class MinecraftLauncher():
 
 
     def installMinecraft(self): # function to install minecraft and forge modloader
-        mclib.forge.install_forge_version(self.mcForgeVersion, self.minecraftDirectory, self.progressReport, mclib.runtime.get_executable_path(self.mcJavaVersion, self.minecraftDirectory))
+        mclib.forge.install_forge_version(self.mcForgeVersion, self.minecraftDirectory, self.progressReport, mclib.runtime.get_executable_path(self.mcJavaVersion, self.minecraftDirectory).replace('java.exe','javaw.exe'))
 
 
     def installModpack(self): # function to install bscraft modpack files (WIP)
