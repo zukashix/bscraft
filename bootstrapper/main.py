@@ -49,7 +49,7 @@ class BackendUtilities:
     # function to check internet connection
     def checkInternet() -> bool:
         headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
+        'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
         }
         try:
             requests.get('https://updater.braxtonelmer.com/', timeout=10, headers=headers)
@@ -62,7 +62,7 @@ class BackendUtilities:
     def downloadFile(file_url, file_loc) -> bool:
         try:
             headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
             }
             r = requests.get(file_url, stream = True, headers=headers, verify=False)
             with open(file_loc, 'wb') as ufile:
@@ -91,7 +91,7 @@ class BackendInitiliazer():
         # define local variables
         self.utils = BackendUtilities
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
             }
     
 
