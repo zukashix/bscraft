@@ -32,8 +32,7 @@ BSCraft is a vanilla+ lightweight minecraft modpack
 - Ensure Python 3.10.6 64-bit is installed.
 - `git clone` OR download this repository and set repo root to working directory.
 - Install modules. `python -m pip install -r requirements.txt`
-- Run the script. `python ./bootstrapper/main.py` (Bootstrapper) or `python ./launcher/main.py` (Launcher) or `python ./server/bot.py` (Skin Server Bot)
-- If background image/fonts do not load, check working directory (must be the root folder, not the `bootstrapper`/`launcher` folder.) OR modify code to point to the files correctly.
+- Run the script. `python ./bootstrapper/main.py` (Bootstrapper) or `python ./launcher/main.py` (Launcher)
 
 ## Developers
 - [**Zukashi**](https://github.com/zukashix)
