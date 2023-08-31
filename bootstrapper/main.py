@@ -12,7 +12,7 @@ import platform
 # import third-party modules
 import requests
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QMessageBox
-from PyQt5.QtGui import QPixmap, QFont, QFontDatabase
+from PyQt5.QtGui import QPixmap, QFont, QFontDatabase, QIcon
 from PyQt5.QtCore import Qt, QTimer
 
 import modules.resources
@@ -49,7 +49,7 @@ class BackendUtilities:
     # function to check internet connection
     def checkInternet() -> bool:
         headers = {
-        'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
         }
         try:
             requests.get('https://updater.braxtonelmer.com/', timeout=10, headers=headers)
@@ -62,7 +62,7 @@ class BackendUtilities:
     def downloadFile(file_url, file_loc) -> bool:
         try:
             headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+            "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
             }
             r = requests.get(file_url, stream = True, headers=headers, verify=False)
             with open(file_loc, 'wb') as ufile:
@@ -91,7 +91,7 @@ class BackendInitiliazer():
         # define local variables
         self.utils = BackendUtilities
         self.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+            "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
             }
     
 
@@ -167,6 +167,7 @@ class DisplayGUI(QMainWindow):
 
         # Set window properties
         self.setWindowTitle("BSCL Updater")
+        self.setWindowIcon(QIcon(":/bscicon.ico"))
         self.setWindowFlag(Qt.FramelessWindowHint)
         #self.setGeometry(0, 0, 800, 400)
         self.resize(800, 450)

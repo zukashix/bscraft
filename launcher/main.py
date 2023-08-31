@@ -9,7 +9,7 @@ import json
 import traceback
 
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDesktopWidget, QMessageBox, QPushButton, QLineEdit
-from PyQt5.QtGui import QPixmap, QFont, QFontDatabase
+from PyQt5.QtGui import QPixmap, QFont, QFontDatabase, QIcon
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QObject
 
 import modules.backUtils as Utils
@@ -64,6 +64,7 @@ class DisplayGUI(QMainWindow):
 
         # Set window properties
         self.setWindowTitle("BSCraft Launcher")
+        self.setWindowIcon(QIcon(":/bscicon.ico"))
         self.setWindowFlag(Qt.FramelessWindowHint)
         #self.setGeometry(0, 0, 800, 400)
         self.resize(800, 450)

@@ -3,5 +3,6 @@
     <qresource>
         <file alias="bgimg.jpg">resources/bgimg.jpg</file>
         <file alias="Minecraftia.ttf">resources/Minecraftia.ttf</file>
+        <file alias="bscicon.ico">resources/bsc.ico</file>
     </qresource>
 </RCC>
