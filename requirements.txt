@@ -2,9 +2,5 @@ PyQt5==5.15.6
 requests
 minecraft-launcher-lib
 psutil
-<<<<<<< HEAD
-pyinstaller
-ftplib
-=======
 pyinstaller==5.0.1
->>>>>>> 73633d08a1e7fa02177c6fc6574d24f79e821c84
+ftplib
