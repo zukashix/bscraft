@@ -8,3 +8,4 @@ BSCraft_Bootstrapper_Error.txt
 server/cogs/__pycache__/
 dist/
 bootstrapper/modules/__pycache__/
+launcher/modules/ftpConfig.py
