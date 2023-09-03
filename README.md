@@ -23,7 +23,7 @@ BSCraft is a vanilla+ lightweight minecraft modpack
 - Windows OS (7 and up) are the target platforms.
 - Imported/Native code is recommended to be cross platform or atleast support (linux/aarch64).
 - Build target is amd64.
-- Python 3.10.6 64-bit must be used.
+- Python 3.8.10 64-bit must be used.
 - PyQt5 v5.15.6 must be used.
 - PyInstaller to build executable must be used.
 
