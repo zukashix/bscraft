@@ -4,7 +4,7 @@ Source for BSCraft 3.0 Launcher & Bootstrapper <br>
 BSCraft is a vanilla+ lightweight minecraft modpack 
 
 ## For Players
-- If you are a player wanting to download and play BSCraft, please head over to the "[**Releases**](https://github.com/zukashix/bscraft/releases/tag/BootstrapperMain)" page and download the latest application.
+- If you are a player wanting to download and play BSCraft, please head over to the "[**Releases**](https://github.com/zukashix/bscraft/releases/tag/Bootstrapper)" page and download the latest application.
 
 ## Progress
 
