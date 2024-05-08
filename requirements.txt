@@ -3,4 +3,4 @@ requests
 minecraft-launcher-lib
 psutil
 pyinstaller==5.0.1
-ftplib
+#ftplib

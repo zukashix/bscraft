@@ -17,6 +17,8 @@ from PyQt5.QtCore import Qt, QTimer
 
 import modules.resources
 
+BOOTSTRAPPER_DATA_URL = "https://zukashi.us/bscraft/bootstrapper_data.json"
+
 # configure primary directory as per os
 plat = platform.system().lower()
 if 'win' in plat:
@@ -52,7 +54,7 @@ class BackendUtilities:
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
         }
         try:
-            requests.get('https://updater.braxtonelmer.com/', timeout=10, headers=headers)
+            requests.get('https://zukashi.us/', timeout=10, headers=headers)
             return True
         except:
             return False
@@ -101,7 +103,7 @@ class BackendInitiliazer():
     
     # function to get size of latest file in MBs
     def getMbSize(self) -> str:
-        fileUrl = requests.get("https://updater.braxtonelmer.com/BSCraft/bootstrapper_data.json", headers=self.headers).json()['latest_url']
+        fileUrl = requests.get(BOOTSTRAPPER_DATA_URL, headers=self.headers).json()['latest_url']
         fileByteSize = int(requests.head(fileUrl, headers=self.headers).headers['Content-Length'])
         return str(int(fileByteSize / 1048576))
 
@@ -117,14 +119,15 @@ class BackendInitiliazer():
         if 'win' in plat:
             args = "start /B {}.bscraft/launcher.exe".format(APPDATA)
         else:
-            args = "nohup firefox &" # for linux, dev use only. will be removed in target build
+            QMessageBox.critical(None, "BSCraft Launcher", "Unsupported System OS!")
+            return
         
         os.system(args)
 
 
     # function to install the latest available version of launcher
     def install(self):
-        repoData = requests.get("https://updater.braxtonelmer.com/BSCraft/bootstrapper_data.json", headers=self.headers).json()
+        repoData = requests.get(BOOTSTRAPPER_DATA_URL, headers=self.headers).json()
 
         try:
             os.makedirs(APPDATA + '.bscraft')
@@ -146,7 +149,7 @@ class BackendInitiliazer():
 
     # function to check for launcher updates
     def checkForUpdate(self) -> bool:
-        repoData = requests.get("https://updater.braxtonelmer.com/BSCraft/bootstrapper_data.json", headers=self.headers).json()
+        repoData = requests.get(BOOTSTRAPPER_DATA_URL, headers=self.headers).json()
         localData = json.load(open(APPDATA + '.bscraft/validation.json', 'r'))
 
         if localData['bootstrapper']['localVersion'] == repoData['latest_version']:

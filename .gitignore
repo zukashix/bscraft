@@ -9,3 +9,7 @@ server/cogs/__pycache__/
 dist/
 bootstrapper/modules/__pycache__/
 launcher/modules/ftpConfig.py
+.env/
+build/
+BSCraftLauncher.spec
+BSCraftBootstrapper.spec

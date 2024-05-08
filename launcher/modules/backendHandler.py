@@ -30,9 +30,11 @@ class playGameThread(QThread):
         self.parentClass = parent
         self.systemMemory = Utils.getRam()
 
-        self._progressLast = None
+        self._progressLast = 0
         self._progressMax = 0
         self._progressStatusText = ''
+        self._totalStages = 6
+        self._currentStage = 0
 
         if os.path.isfile(APPDATA + '.bscraft/launcherValidity.json'):
             self.validityData = json.load(open(APPDATA + '.bscraft/launcherValidity.json', 'r'))
@@ -52,15 +54,19 @@ class playGameThread(QThread):
 
     def _setProgressMax(self, maxProgress): # set maximum progress
         self._progressMax = maxProgress
+        
 
-
-    def _writeProgressStatus(self, progress): # set progress percentage
+    def _writeProgressStatus(self, progress):
         if self._progressMax != 0:
-            currentStatus = int((progress/self._progressMax)*100)
-            if self._progressLast == currentStatus:
-                pass
-            else:
-                self.parentClass.status_label.setText(self._progressStatusText.format(str(currentStatus)))
+            currentStatus = int((progress / self._progressMax) * 100)
+            if self._progressLast != currentStatus:
+                if currentStatus < self._progressLast and 'Installing Minecraft' in self._progressStatusText:
+                    oldStage = self._currentStage
+                    self._currentStage += 1
+                    self._currentStage = min(self._currentStage, self._totalStages)
+                    self._progressStatusText = self._progressStatusText.replace(str(oldStage), str(self._currentStage)).replace('stageCurr', str(self._currentStage)).replace('stageMax', str(self._totalStages))
+
+                self.parentClass.status_label.setText(self._progressStatusText.format(currentStatus))
                 self._progressLast = currentStatus
 
 
@@ -135,7 +141,7 @@ class playGameThread(QThread):
                 return
             
         else:
-            repoData = requests.get("https://updater.braxtonelmer.com/BSCraft/launcher_data.json", headers=Utils.headers).json()
+            repoData = requests.get(Utils.LAUNCHER_DATA_URL, headers=Utils.headers).json()
             json.dump(repoData, open(APPDATA + '.bscraft/lastRepoData.json', 'w'))
 
 
@@ -158,7 +164,7 @@ class playGameThread(QThread):
 
         # install core minecraft
         if not self.validityData["minecraftValid"]:
-            self._progressStatusText = 'Installing Minecraft... [{}%]'
+            self._progressStatusText = 'Installing Minecraft [{}%] [stageCurr/stageMax]'
             self.parentClass.status_label.setStyleSheet("color: lightgreen")
             
             self.Launcher.installMinecraft()

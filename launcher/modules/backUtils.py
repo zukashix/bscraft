@@ -14,10 +14,13 @@ headers = {
     "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
 }
 
+LAUNCHER_DATA_URL = "https://zukashi.us/bscraft/launcher_data.json"
+SRV_DOMAIN = 'https://zukashi.us/'
+
 # function to check internet connection
 def checkInternet() -> bool:
     try:
-        requests.get('https://updater.braxtonelmer.com/', timeout=10, headers=headers)
+        requests.get(SRV_DOMAIN, timeout=10, headers=headers)
         return True
     except (requests.ConnectionError, requests.Timeout):
         return False

@@ -4,7 +4,6 @@
 # import modules
 import minecraft_launcher_lib as mclib
 import modules.backUtils as Utils
-import modules.ftpConfig as CFG
 from ftplib import FTP
 
 import os
@@ -72,33 +71,10 @@ class MinecraftLauncher():
             shutil.rmtree(self.modpackPath + '/tmp/')
         os.makedirs(self.modpackPath + '/tmp/')
 
-        local_file = open(self.modpackPath + '/tmp/modpack-tmp.zip', 'wb')
-
-        def modpackInstallCallback(data):
-            global DLSZ, LASTPERCT
-            DLSZ += len(data)
-
-            local_file.write(data)
-
-            total_size = file_size  # You need to set 'file_size' to the total size of the file being downloaded
-            progress = str(int((DLSZ / total_size) * 100))
-
-            if progress == LASTPERCT:
-                pass
-            else:
-                self.progressReport['setText'](f'Downloading Modpack... [{progress}%]', 'lightgreen')
-                LASTPERCT = progress
+        self.progressReport['setText'](f'Downloading Modpack... [0%]', 'lightgreen')
 
         # download modpack zip
-        #Utils.downloadFile(self.latestModpackURL, self.modpackPath + '/tmp/modpack-tmp.zip', self.progressReport)
-        ftp = FTP()
-        ftp.connect(CFG.ftpc['host'], CFG.ftpc['port'])
-        ftp.login(user=CFG.ftpc['username'], passwd=CFG.ftpc['password'])
-        file_size = ftp.size('bscraftmp.zip')
-
-        ftp.retrbinary('RETR ' + 'bscraftmp.zip', callback=modpackInstallCallback)
-
-        local_file.close()
+        Utils.downloadFile(self.latestModpackURL, self.modpackPath + '/tmp/modpack-tmp.zip', self.progressReport)
 
         # set status text
         self.progressReport["setText"]("Installing Modpack...", "lightgreen")
