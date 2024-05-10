@@ -33,7 +33,7 @@ class playGameThread(QThread):
         self._progressLast = 0
         self._progressMax = 0
         self._progressStatusText = ''
-        self._totalStages = 6
+        self._totalStages = 11
         self._currentStage = 0
 
         if os.path.isfile(APPDATA + '.bscraft/launcherValidity.json'):
@@ -64,9 +64,9 @@ class playGameThread(QThread):
                     oldStage = self._currentStage
                     self._currentStage += 1
                     self._currentStage = min(self._currentStage, self._totalStages)
-                    self._progressStatusText = self._progressStatusText.replace(str(oldStage), str(self._currentStage)).replace('stageCurr', str(self._currentStage)).replace('stageMax', str(self._totalStages))
-
-                self.parentClass.status_label.setText(self._progressStatusText.format(currentStatus))
+                    self.parentClass.status_label.setText(self._progressStatusText.format(currentStatus, self._currentStage, self._totalStages))
+                
+                self.parentClass.status_label.setText(self._progressStatusText.format(currentStatus, self._currentStage, self._totalStages))
                 self._progressLast = currentStatus
 
 
@@ -124,7 +124,7 @@ class playGameThread(QThread):
 
 
         # check for internet and downloaded files
-        if not Utils.checkInternet() and not self.validityData['javaValid'] and not self.validityData['minecraftValid'] and not self.validityData['modpackValid']:
+        if not (Utils.checkInternet() or self.validityData['javaValid'] or self.validityData['minecraftValid'] or self.validityData['modpackValid']):
             self._setStatusText("Server unreachable & files missing.", 'orange')
             self.actionclass.isThreading = False
             self.finished.emit()
@@ -151,7 +151,7 @@ class playGameThread(QThread):
         # begin installation tasks
         # install java
         if not self.validityData["javaValid"]:
-            self._progressStatusText = 'Installing Java... [{}%]'
+            self._progressStatusText = 'Downloading Java... [{}%]'
             self.parentClass.status_label.setStyleSheet("color: lightgreen")
 
             if os.path.isdir(APPDATA + '.bscraft/runtime/'):
@@ -164,7 +164,7 @@ class playGameThread(QThread):
 
         # install core minecraft
         if not self.validityData["minecraftValid"]:
-            self._progressStatusText = 'Installing Minecraft [{}%] [stageCurr/stageMax]'
+            self._progressStatusText = 'Installing Minecraft [{}%] [{}/{}]'
             self.parentClass.status_label.setStyleSheet("color: lightgreen")
             
             self.Launcher.installMinecraft()
@@ -172,8 +172,7 @@ class playGameThread(QThread):
             self._updateValidity('minecraftValid', True)
 
 
-        # install modpack files
-        
+        # install modpack files        
         if Utils.checkInternet():
             self._progressStatusText = "Downloading Modpack... [{}%]"
             self.parentClass.status_label.setStyleSheet("color: lightgreen")
