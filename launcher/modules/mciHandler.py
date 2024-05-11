@@ -54,7 +54,6 @@ class MinecraftLauncher():
     def installJava(self): # function to install java runtime
         # mclib.runtime.install_jvm_runtime(self.mcJavaVersion, self.minecraftDirectory, self.progressReport)
         self._dirInit('tmp')
-        self._dirInit('runtime')
 
         if os.path.isfile(self.minecraftDirectory + '/javaVersion.json'):
             mpLocalData = json.load(open(self.minecraftDirectory + '/javaVersion.json', 'r'))
@@ -65,6 +64,8 @@ class MinecraftLauncher():
         validityData = json.load(open(self.minecraftDirectory + '/launcherValidity.json', 'r'))
         validityData["javaValid"] = False
         json.dump(validityData, open(self.minecraftDirectory + '/launcherValidity.json', 'w'))
+
+        self._dirInit('runtime')
 
         # download java zip
         Utils.downloadFile(self.javaURL, self.minecraftDirectory + '/tmp/java-tmp.zip', self.progressReport)
