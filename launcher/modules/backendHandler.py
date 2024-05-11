@@ -33,7 +33,7 @@ class playGameThread(QThread):
         self._progressLast = 0
         self._progressMax = 0
         self._progressStatusText = ''
-        self._totalStages = 11
+        self._totalStages = 10
         self._currentStage = 0
 
         if os.path.isfile(APPDATA + '.bscraft/launcherValidity.json'):
@@ -61,7 +61,6 @@ class playGameThread(QThread):
             currentStatus = int((progress / self._progressMax) * 100)
             if self._progressLast != currentStatus:
                 if currentStatus < self._progressLast and 'Installing Minecraft' in self._progressStatusText:
-                    oldStage = self._currentStage
                     self._currentStage += 1
                     self._currentStage = min(self._currentStage, self._totalStages)
                     self.parentClass.status_label.setText(self._progressStatusText.format(currentStatus, self._currentStage, self._totalStages))
@@ -124,7 +123,7 @@ class playGameThread(QThread):
 
 
         # check for internet and downloaded files
-        if not (Utils.checkInternet() or self.validityData['javaValid'] or self.validityData['minecraftValid'] or self.validityData['modpackValid']):
+        if not Utils.checkInternet() and any(not self.validityData[key] for key in ['javaValid', 'minecraftValid', 'modpackValid']):
             self._setStatusText("Server unreachable & files missing.", 'orange')
             self.actionclass.isThreading = False
             self.finished.emit()

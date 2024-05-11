@@ -34,6 +34,7 @@ BSCraft is a vanilla+ lightweight minecraft modpack
 - Install modules. `python -m pip install -r requirements.txt`
 - Build resources file (pre-built but rebuilding will be needed if any changes made to QRC) `pyrcc5 resources.qrc -o resources.py`
 - Copy `resources.py` generated to `./bootstrapper/modules/resources.py` and `./launcher/modules/resources.py`
+- Find files of `minecraft-launcher-lib` and edit `install.py`: Find the line `if "javaVersion" in versiondata` around line 152 and remove this condition and it's block
 - Run the script. `python ./bootstrapper/main.py` (Bootstrapper) or `python ./launcher/main.py` (Launcher)
 - Compile to EXEs for Windows using commands provided in `./pyinstallerCmd.txt`
 
