@@ -117,7 +117,7 @@ class BackendInitiliazer():
             return
 
         if 'win' in plat:
-            args = "start /B {}.bscraft/launcher.exe".format(APPDATA)
+            args = 'start /B "" "{}.bscraft/launcher.exe"'.format(APPDATA)
         else:
             QMessageBox.critical(None, "BSCraft Launcher", "Unsupported System OS!")
             return
